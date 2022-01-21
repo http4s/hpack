@@ -38,7 +38,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 
-
 @RunWith(classOf[Parameterized]) object HpackTest {
   private val TEST_DIR = "/hpack/"
 
@@ -47,9 +46,8 @@ import org.junit.runners.Parameterized.Parameters
     val files = new File(url.getFile).listFiles
     if (files == null) throw new NullPointerException("files")
     val data = new util.ArrayList[Array[AnyRef]]
-    for (file <- files) {
+    for (file <- files)
       data.add(Array[AnyRef](file.getName))
-    }
     data
   }
 }

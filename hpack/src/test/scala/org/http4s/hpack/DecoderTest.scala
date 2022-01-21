@@ -45,7 +45,6 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 
-
 object DecoderTest {
   private val MAX_HEADER_SIZE = 8192
   private val MAX_HEADER_TABLE_SIZE = 4096
@@ -83,21 +82,18 @@ class DecoderTest {
 
   @Test(expected = classOf[IOException])
   @throws[IOException]
-  def testUnusedIndex(): Unit = { // Index 0 is not used
+  def testUnusedIndex(): Unit = // Index 0 is not used
     decode("80")
-  }
 
   @Test(expected = classOf[IOException])
   @throws[IOException]
-  def testIllegalIndex(): Unit = { // Index larger than the header table
+  def testIllegalIndex(): Unit = // Index larger than the header table
     decode("FF00")
-  }
 
   @Test(expected = classOf[IOException])
   @throws[IOException]
-  def testInsidiousIndex(): Unit = { // Insidious index so the last shift causes sign overflow
+  def testInsidiousIndex(): Unit = // Insidious index so the last shift causes sign overflow
     decode("FF8080808008")
-  }
 
   @Test
   @throws[Exception]
@@ -118,15 +114,14 @@ class DecoderTest {
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
-  def testIllegalDynamicTableSizeUpdate(): Unit = { // max header table size = MAX_HEADER_TABLE_SIZE + 1
+  def testIllegalDynamicTableSizeUpdate()
+      : Unit = // max header table size = MAX_HEADER_TABLE_SIZE + 1
     decode("3FE21F")
-  }
 
   @Test(expected = classOf[IOException])
   @throws[IOException]
-  def testInsidiousMaxDynamicTableSize(): Unit = { // max header table size sign overflow
+  def testInsidiousMaxDynamicTableSize(): Unit = // max header table size sign overflow
     decode("3FE1FFFFFF07")
-  }
 
   @Test
   @throws[Exception]
@@ -155,89 +150,104 @@ class DecoderTest {
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
-  def testLiteralWithIncrementalIndexingWithEmptyName(): Unit = {
+  def testLiteralWithIncrementalIndexingWithEmptyName(): Unit =
     decode("000005" + DecoderTest.hex("value"))
-  }
 
   @Test
   @throws[Exception]
   def testLiteralWithIncrementalIndexingCompleteEviction(): Unit = { // Verify indexed host header
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value"))
-    verify(mockListener).addHeader(DecoderTest.getBytes("name"), DecoderTest.getBytes("value"), false)
+    verify(mockListener).addHeader(
+      DecoderTest.getBytes("name"),
+      DecoderTest.getBytes("value"),
+      false,
+    )
     verifyNoMoreInteractions(mockListener)
     assertFalse(decoder.endHeaderBlock)
     reset(mockListener)
     var sb = new StringBuilder
-    for (i <- 0 until 4096) {
+    for (i <- 0 until 4096)
       sb.append("a")
-    }
     val value = sb.toString
     sb = new StringBuilder
     sb.append("417F811F")
-    for (i <- 0 until 4096) {
+    for (i <- 0 until 4096)
       sb.append("61") // 'a'
 
-    }
     decode(sb.toString)
-    verify(mockListener).addHeader(DecoderTest.getBytes(":authority"), DecoderTest.getBytes(value), false)
+    verify(mockListener).addHeader(
+      DecoderTest.getBytes(":authority"),
+      DecoderTest.getBytes(value),
+      false,
+    )
     verifyNoMoreInteractions(mockListener)
     assertFalse(decoder.endHeaderBlock)
     // Verify next header is inserted at index 62
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(DecoderTest.getBytes("name"), DecoderTest.getBytes("value"), false)
+    verify(mockListener, times(2)).addHeader(
+      DecoderTest.getBytes("name"),
+      DecoderTest.getBytes("value"),
+      false,
+    )
     verifyNoMoreInteractions(mockListener)
   }
 
   @Test
   @throws[Exception]
-  def testLiteralWithIncrementalIndexingWithLargeName(): Unit = { // Ignore header name that exceeds max header size
+  def testLiteralWithIncrementalIndexingWithLargeName()
+      : Unit = { // Ignore header name that exceeds max header size
     val sb = new StringBuilder
     sb.append("407F817F")
-    for (i <- 0 until 16384) {
+    for (i <- 0 until 16384)
       sb.append("61")
-    }
     sb.append("00")
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
     // Verify header block is reported as truncated
     assertTrue(decoder.endHeaderBlock)
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(DecoderTest.getBytes("name"), DecoderTest.getBytes("value"), false)
+    verify(mockListener, times(2)).addHeader(
+      DecoderTest.getBytes("name"),
+      DecoderTest.getBytes("value"),
+      false,
+    )
     verifyNoMoreInteractions(mockListener)
   }
 
   @Test
   @throws[Exception]
-  def testLiteralWithIncrementalIndexingWithLargeValue(): Unit = { // Ignore header that exceeds max header size
+  def testLiteralWithIncrementalIndexingWithLargeValue()
+      : Unit = { // Ignore header that exceeds max header size
     val sb = new StringBuilder
     sb.append("4004")
     sb.append(DecoderTest.hex("name"))
     sb.append("7F813F")
-    for (i <- 0 until 8192) {
+    for (i <- 0 until 8192)
       sb.append("61")
-    }
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
     assertTrue(decoder.endHeaderBlock)
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(DecoderTest.getBytes("name"), DecoderTest.getBytes("value"), false)
+    verify(mockListener, times(2)).addHeader(
+      DecoderTest.getBytes("name"),
+      DecoderTest.getBytes("value"),
+      false,
+    )
     verifyNoMoreInteractions(mockListener)
   }
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
-  def testLiteralWithoutIndexingWithEmptyName(): Unit = {
+  def testLiteralWithoutIndexingWithEmptyName(): Unit =
     decode("000005" + DecoderTest.hex("value"))
-  }
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
   def testLiteralWithoutIndexingWithLargeName(): Unit = {
     val sb = new StringBuilder
     sb.append("007F817F")
-    for (i <- 0 until 16384) {
+    for (i <- 0 until 16384)
       sb.append("61")
-    }
     sb.append("00")
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
@@ -253,9 +263,8 @@ class DecoderTest {
     sb.append("0004")
     sb.append(DecoderTest.hex("name"))
     sb.append("7F813F")
-    for (i <- 0 until 8192) {
+    for (i <- 0 until 8192)
       sb.append("61")
-    }
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
     assertTrue(decoder.endHeaderBlock)
@@ -264,18 +273,16 @@ class DecoderTest {
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
-  def testLiteralNeverIndexedWithEmptyName(): Unit = {
+  def testLiteralNeverIndexedWithEmptyName(): Unit =
     decode("100005" + DecoderTest.hex("value"))
-  }
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
   def testLiteralNeverIndexedWithLargeName(): Unit = {
     val sb = new StringBuilder
     sb.append("107F817F")
-    for (i <- 0 until 16384) {
+    for (i <- 0 until 16384)
       sb.append("61")
-    }
     sb.append("00")
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
@@ -290,9 +297,8 @@ class DecoderTest {
     sb.append("1004")
     sb.append(DecoderTest.hex("name"))
     sb.append("7F813F")
-    for (i <- 0 until 8192) {
+    for (i <- 0 until 8192)
       sb.append("61")
-    }
     decode(sb.toString)
     verifyNoMoreInteractions(mockListener)
     assertTrue(decoder.endHeaderBlock)

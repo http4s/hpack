@@ -34,9 +34,8 @@ package com.twitter.hpack
 import java.util
 import java.util.List
 
-
-final class TestHeaderListener private[hpack](val headers: util.List[HeaderField]) extends HeaderListener {
-  override def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit = {
+final class TestHeaderListener private[hpack] (val headers: util.List[HeaderField])
+    extends HeaderListener {
+  override def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit =
     headers.add(new HeaderField(name, value))
-  }
 }

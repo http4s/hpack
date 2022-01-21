@@ -39,15 +39,17 @@ import java.util.Random
 import org.junit.Assert
 import org.junit.Test
 
-
 object HuffmanTest {
   @throws[IOException]
-  private def roundTrip(encoder: HuffmanEncoder, decoder: HuffmanDecoder, s: String): Unit = {
+  private def roundTrip(encoder: HuffmanEncoder, decoder: HuffmanDecoder, s: String): Unit =
     roundTrip(encoder, decoder, s.getBytes)
-  }
 
   @throws[IOException]
-  private def roundTrip(encoder: HuffmanEncoder, decoder: HuffmanDecoder, buf: Array[Byte]): Unit = {
+  private def roundTrip(
+      encoder: HuffmanEncoder,
+      decoder: HuffmanDecoder,
+      buf: Array[Byte],
+  ): Unit = {
     val baos = new ByteArrayOutputStream
     val dos = new DataOutputStream(baos)
     encoder.encode(dos, buf)
@@ -61,9 +63,8 @@ class HuffmanTest {
   @throws[IOException]
   def testHuffman(): Unit = {
     val s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    for (i <- 0 until s.length) {
+    for (i <- 0 until s.length)
       roundTrip(s.substring(0, i))
-    }
     val random = new Random(123456789L)
     val buf = new Array[Byte](4096)
     random.nextBytes(buf)
@@ -74,9 +75,8 @@ class HuffmanTest {
   @throws[IOException]
   def testDecodeEOS(): Unit = {
     val buf = new Array[Byte](4)
-    for (i <- 0 until 4) {
-      buf(i) = 0xFF.toByte
-    }
+    for (i <- 0 until 4)
+      buf(i) = 0xff.toByte
     Huffman.DECODER.decode(buf)
   }
 
@@ -89,23 +89,21 @@ class HuffmanTest {
     Huffman.DECODER.decode(buf)
   }
 
-  @Test //(expected = IOException.class) TODO(jpinner) fix me @throws[IOException]
+  @Test // (expected = IOException.class) TODO(jpinner) fix me @throws[IOException]
   def testDecodeExtraPadding(): Unit = {
     val buf = new Array[Byte](2)
-    buf(0) = 0x0F // '1', 'EOS'
+    buf(0) = 0x0f // '1', 'EOS'
 
-    buf(1) = 0xFF.toByte // 'EOS'
+    buf(1) = 0xff.toByte // 'EOS'
 
     Huffman.DECODER.decode(buf)
   }
 
   @throws[IOException]
-  private def roundTrip(s: String): Unit = {
+  private def roundTrip(s: String): Unit =
     HuffmanTest.roundTrip(Huffman.ENCODER, Huffman.DECODER, s)
-  }
 
   @throws[IOException]
-  private def roundTrip(buf: Array[Byte]): Unit = {
+  private def roundTrip(buf: Array[Byte]): Unit =
     HuffmanTest.roundTrip(Huffman.ENCODER, Huffman.DECODER, buf)
-  }
 }
