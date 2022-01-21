@@ -1,6 +1,7 @@
 ThisBuild / tlBaseVersion := "1.0"
 ThisBuild / tlCiReleaseTags := false
 ThisBuild / tlCiReleaseBranches := Seq.empty
+ThisBuild / startYear := Some(2022)
 
 lazy val root = project.in(file(".")).aggregate(hpack).enablePlugins(NoPublishPlugin)
 
