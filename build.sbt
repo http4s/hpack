@@ -15,8 +15,13 @@ lazy val hpack = project
       "org.mockito" % "mockito-core" % "1.9.5" % Test,
       "com.google.code.gson" % "gson" % "2.3.1" % Test,
     ),
+    mimaPreviousArtifacts := Set.empty,
     Test / fork := true,
-    Test / javaOptions += List(
-      "--add-opens=java.base/java.lang=ALL-UNNAMED"
-    ).mkString(" "),
+    Test / javaOptions += {
+      if (sys.props("java.version").startsWith("1.11."))
+        List(
+          "--add-opens=java.base/java.lang=ALL-UNNAMED"
+        ).mkString(" ")
+      else ""
+    },
   )
