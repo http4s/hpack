@@ -18,4 +18,5 @@ lazy val hpack = project
       "com.google.code.gson" % "gson" % "2.3.1" % Test,
     ),
     mimaPreviousArtifacts := Set.empty,
+    doc / javacOptions ~= { _.filterNot(_ == "-Xlint:all") },
   )
