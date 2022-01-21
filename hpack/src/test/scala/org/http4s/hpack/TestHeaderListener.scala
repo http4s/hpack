@@ -29,50 +29,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package com.twitter.hpack
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util
+import java.util.List
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-@RunWith(Parameterized.class)
-public class HpackTest {
-
-  private static final String TEST_DIR = "/hpack/";
-
-  private final String fileName;
-
-  public HpackTest(String fileName) {
-    this.fileName = fileName;
-  }
-
-  @Parameters(name = "{0}")
-  public static Collection<Object[]> data() {
-    URL url = HpackTest.class.getResource(TEST_DIR);
-    File[] files = new File(url.getFile()).listFiles();
-    if (files == null) {
-      throw new NullPointerException("files");
-    }
-
-    ArrayList<Object[]> data = new ArrayList<Object[]>();
-    for (File file : files) {
-      data.add(new Object[] { file.getName() });
-    }
-    return data;
-  }
-
-  @Test
-  public void test() throws Exception {
-    InputStream is = HpackTest.class.getResourceAsStream(TEST_DIR + fileName);
-    TestCase testCase = TestCase.load(is);
-    testCase.testCompress();
-    testCase.testDecompress();
+final class TestHeaderListener private[hpack](val headers: util.List[HeaderField]) extends HeaderListener {
+  override def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit = {
+    headers.add(new HeaderField(name, value))
   }
 }
