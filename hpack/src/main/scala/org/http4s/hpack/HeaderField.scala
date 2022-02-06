@@ -31,81 +31,74 @@
  */
 package com.twitter.hpack;
 
-import static com.twitter.hpack.HpackUtil.ISO_8859_1;
-import static com.twitter.hpack.HpackUtil.requireNonNull;
+import com.twitter.hpack.HpackUtil.ISO_8859_1;
+import com.twitter.hpack.HpackUtil.requireNonNull;
 
-class HeaderField implements Comparable<HeaderField> {
-
+object HeaderField {
   // Section 4.1. Calculating Table Size
   // The additional 32 octets account for an estimated
   // overhead associated with the structure.
-  static final int HEADER_ENTRY_OVERHEAD = 32;
+  val HEADER_ENTRY_OVERHEAD = 32;
 
-  static int sizeOf(byte[] name, byte[] value) {
+  def sizeOf(name: Array[Byte], value: Array[Byte]): Int = {
     return name.length + value.length + HEADER_ENTRY_OVERHEAD;
   }
+}
 
-  final byte[] name;
-  final byte[] value;
+class HeaderField(val name: Array[Byte], val value: Array[Byte]) extends Comparable[HeaderField] {
+  requireNonNull(name)
+  requireNonNull(value)
 
   // This constructor can only be used if name and value are ISO-8859-1 encoded.
-  HeaderField(String name, String value) {
+  def this(name: String, value: String) {
     this(name.getBytes(ISO_8859_1), value.getBytes(ISO_8859_1));
   }
 
-  HeaderField(byte[] name, byte[] value) {
-    this.name = requireNonNull(name);
-    this.value = requireNonNull(value);
+  def size(): Int = {
+    return name.length + value.length + HeaderField.HEADER_ENTRY_OVERHEAD;
   }
 
-  int size() {
-    return name.length + value.length + HEADER_ENTRY_OVERHEAD;
-  }
-
-  @Override
-  public int compareTo(HeaderField anotherHeaderField) {
-    int ret = compareTo(name, anotherHeaderField.name);
+  override def compareTo(anotherHeaderField: HeaderField): Int = {
+    var ret = compareTo(name, anotherHeaderField.name);
     if (ret == 0) {
       ret = compareTo(value, anotherHeaderField.value);
     }
     return ret;
   }
 
-  private int compareTo(byte[] s1, byte[] s2) {
-    int len1 = s1.length;
-    int len2 = s2.length;
-    int lim = Math.min(len1, len2);
+  private def compareTo(s1: Array[Byte], s2: Array[Byte]): Int = {
+    val len1 = s1.length;
+    val len2 = s2.length;
+    val lim = Math.min(len1, len2);
 
-    int k = 0;
+    var k = 0;
     while (k < lim) {
-      byte b1 = s1[k];
-      byte b2 = s2[k];
+      val b1 = s1(k);
+      val b2 = s2(k);
       if (b1 != b2) {
         return b1 - b2;
       }
-      k++;
+      k += 1;
     }
     return len1 - len2;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == this) {
+  override def equals(obj: Any): Boolean = {
+    if (obj.isInstanceOf[AnyRef] && (obj.asInstanceOf[AnyRef] eq this)) {
       return true;
     }
-    if (!(obj instanceof HeaderField)) {
+    if (!(obj.isInstanceOf[HeaderField])) {
       return false;
     }
-    HeaderField other = (HeaderField) obj;
-    boolean nameEquals = HpackUtil.equals(name, other.name);
-    boolean valueEquals = HpackUtil.equals(value, other.value);
+    val other = obj.asInstanceOf[HeaderField];
+    val nameEquals = HpackUtil.equals(name, other.name);
+    val valueEquals = HpackUtil.equals(value, other.value);
     return nameEquals && valueEquals;
   }
 
-  @Override
-  public String toString() {
-    String nameString = new String(name);
-    String valueString = new String(value);
+  override def toString(): String = {
+    val nameString = new String(name);
+    val valueString = new String(value);
     return nameString + ": " + valueString;
   }
 }

@@ -121,7 +121,7 @@ final class TestCase {
 
       List<HeaderField> expectedHeaders = new ArrayList<HeaderField>();
       for (HeaderField h : headerBlock.getHeaders()) {
-        expectedHeaders.add(new HeaderField(h.name, h.value));
+        expectedHeaders.add(new HeaderField(h.name(), h.value()));
       }
 
       if (!expectedHeaders.equals(actualHeaders)) {
@@ -178,7 +178,7 @@ final class TestCase {
     }
 
     for (HeaderField e: headers) {
-      encoder.encodeHeader(baos, e.name, e.value, sensitive);
+      encoder.encodeHeader(baos, e.name(), e.value(), sensitive);
     }
 
     return baos.toByteArray();
