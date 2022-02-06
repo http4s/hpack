@@ -37,65 +37,65 @@ import java.util.Arrays;
 
 import com.twitter.hpack.HpackUtil.IndexType;
 
-public final class Encoder {
-
-  private static final int BUCKET_SIZE = 17;
-  private static final byte[] EMPTY = {};
-
+final class Encoder(
   // for testing
-  private final boolean useIndexing;
-  private final boolean forceHuffmanOn;
-  private final boolean forceHuffmanOff;
+  useIndexing: Boolean,
+  forceHuffmanOn: Boolean,
+  forceHuffmanOff: Boolean,
+) {
+
+  private[this] val BUCKET_SIZE = 17;
+  private val EMPTY = Array.emptyByteArray;
 
   // a linked hash map of header fields
-  private final HeaderEntry[] headerFields = new HeaderEntry[BUCKET_SIZE];
-  private final HeaderEntry head = new HeaderEntry(-1, EMPTY, EMPTY, Integer.MAX_VALUE, null);
-  private int size;
-  private int capacity;
-
-  /**
-   * Creates a new encoder.
-   */
-  public Encoder(int maxHeaderTableSize) {
-    this(maxHeaderTableSize, true, false, false);
-  }
+  private val headerFields: Array[HeaderEntry] = new Array[HeaderEntry](BUCKET_SIZE);
+  private val head: HeaderEntry = new HeaderEntry(-1, EMPTY, EMPTY, Integer.MAX_VALUE, null);
+  private[hpack] var size: Int = _;
+  private var capacity: Int = _;
 
   /**
    * Constructor for testing only.
    */
-  Encoder(
-      int maxHeaderTableSize,
-      boolean useIndexing,
-      boolean forceHuffmanOn,
-      boolean forceHuffmanOff
+  def this(
+      maxHeaderTableSize: Int,
+      useIndexing: Boolean,
+      forceHuffmanOn: Boolean,
+      forceHuffmanOff: Boolean
   ) {
+    this(useIndexing, forceHuffmanOn, forceHuffmanOff)
     if (maxHeaderTableSize < 0) {
       throw new IllegalArgumentException("Illegal Capacity: " + maxHeaderTableSize);
     }
-    this.useIndexing = useIndexing;
-    this.forceHuffmanOn = forceHuffmanOn;
-    this.forceHuffmanOff = forceHuffmanOff;
     this.capacity = maxHeaderTableSize;
-    head.before = head.after = head;
+    head.before = head;
+    head.after = head;
+  }
+
+  /**
+   * Creates a new encoder.
+   */
+  def this(maxHeaderTableSize: Int) {
+    this(maxHeaderTableSize, true, false, false);
   }
 
   /**
    * Encode the header field into the header block.
    */
-  public void encodeHeader(OutputStream out, byte[] name, byte[] value, boolean sensitive) throws IOException {
+  @throws[IOException]
+  def encodeHeader(out: OutputStream, name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit = {
 
     // If the header value is sensitive then it must never be indexed
     if (sensitive) {
-      int nameIndex = getNameIndex(name);
+      val nameIndex = getNameIndex(name);
       encodeLiteral(out, name, value, IndexType.NEVER, nameIndex);
       return;
     }
 
     // If the peer will only use the static table
     if (capacity == 0) {
-      int staticTableIndex = StaticTable.getIndex(name, value);
+      val staticTableIndex = StaticTable.getIndex(name, value);
       if (staticTableIndex == -1) {
-        int nameIndex = StaticTable.getIndex(name);
+        val nameIndex = StaticTable.getIndex(name);
         encodeLiteral(out, name, value, IndexType.NONE, nameIndex);
       } else {
         encodeInteger(out, 0x80, 7, staticTableIndex);
@@ -103,31 +103,31 @@ public final class Encoder {
       return;
     }
 
-    int headerSize = HeaderField.sizeOf(name, value);
+    val headerSize = HeaderField.sizeOf(name, value);
 
     // If the headerSize is greater than the max table size then it must be encoded literally
     if (headerSize > capacity) {
-      int nameIndex = getNameIndex(name);
+      val nameIndex = getNameIndex(name);
       encodeLiteral(out, name, value, IndexType.NONE, nameIndex);
       return;
     }
 
-    HeaderEntry headerField = getEntry(name, value);
+    val headerField = getEntry(name, value);
     if (headerField != null) {
-      int index = getIndex(headerField.index) + StaticTable.length;
+      val index = getIndex(headerField.index) + StaticTable.length;
       // Section 6.1. Indexed Header Field Representation
       encodeInteger(out, 0x80, 7, index);
     } else {
-      int staticTableIndex = StaticTable.getIndex(name, value);
+      val staticTableIndex = StaticTable.getIndex(name, value);
       if (staticTableIndex != -1) {
         // Section 6.1. Indexed Header Field Representation
         encodeInteger(out, 0x80, 7, staticTableIndex);
       } else {
-        int nameIndex = getNameIndex(name);
+        val nameIndex = getNameIndex(name);
         if (useIndexing) {
           ensureCapacity(headerSize);
         }
-        IndexType indexType = useIndexing ? IndexType.INCREMENTAL : IndexType.NONE;
+        val indexType = if (useIndexing) IndexType.INCREMENTAL else IndexType.NONE;
         encodeLiteral(out, name, value, indexType, nameIndex);
         if (useIndexing) {
           add(name, value);
@@ -139,7 +139,8 @@ public final class Encoder {
   /**
    * Set the maximum table size.
    */
-  public void setMaxHeaderTableSize(OutputStream out, int maxHeaderTableSize) throws IOException {
+  @throws[IOException]
+  def setMaxHeaderTableSize(out: OutputStream, maxHeaderTableSize: Int): Unit = {
     if (maxHeaderTableSize < 0) {
       throw new IllegalArgumentException("Illegal Capacity: " + maxHeaderTableSize);
     }
@@ -154,23 +155,24 @@ public final class Encoder {
   /**
    * Return the maximum table size.
    */
-  public int getMaxHeaderTableSize() {
+  def getMaxHeaderTableSize(): Int = {
     return capacity;
   }
 
   /**
    * Encode integer according to Section 5.1.
    */
-  private static void encodeInteger(OutputStream out, int mask, int n, int i) throws IOException {
+  @throws[IOException]
+  private[this] def encodeInteger(out: OutputStream, mask: Int, n: Int, i: Int): Unit = {
     if (n < 0 || n > 8) {
       throw new IllegalArgumentException("N: " + n);
     }
-    int nbits = 0xFF >>> (8 - n);
+    val nbits = 0xFF >>> (8 - n);
     if (i < nbits) {
       out.write(mask | i);
     } else {
       out.write(mask | nbits);
-      int length = i - nbits;
+      var length = i - nbits;
       while (true) {
         if ((length & ~0x7F) == 0) {
           out.write(length);
@@ -186,8 +188,9 @@ public final class Encoder {
   /**
    * Encode string literal according to Section 5.2.
    */
-  private void encodeStringLiteral(OutputStream out, byte[] string) throws IOException {
-    int huffmanLength = Huffman.ENCODER.getEncodedLength(string);
+  @throws[IOException]
+  private[this] def encodeStringLiteral(out: OutputStream, string: Array[Byte]): Unit = {
+    val huffmanLength = Huffman.ENCODER.getEncodedLength(string);
     if ((huffmanLength < string.length && !forceHuffmanOff) || forceHuffmanOn) {
       encodeInteger(out, 0x80, 7, huffmanLength);
       Huffman.ENCODER.encode(out, string);
@@ -200,35 +203,32 @@ public final class Encoder {
   /**
    * Encode literal header field according to Section 6.2.
    */
-  private void encodeLiteral(OutputStream out, byte[] name, byte[] value, IndexType indexType, int nameIndex)
-      throws IOException {
-    int mask;
-    int prefixBits;
-    switch(indexType) {
-    case INCREMENTAL:
+  @throws[IOException]
+  private[this] def encodeLiteral(out: OutputStream, name: Array[Byte], value: Array[Byte], indexType: IndexType, nameIndex: Int)
+      : Unit = {
+    import IndexType._
+    var mask: Int = 0;
+    var prefixBits: Int = 0;
+    indexType match {
+    case INCREMENTAL =>
       mask = 0x40;
       prefixBits = 6;
-      break;
-    case NONE:
+    case NONE =>
       mask = 0x00;
       prefixBits = 4;
-      break;
-    case NEVER:
+    case NEVER =>
       mask = 0x10;
       prefixBits = 4;
-      break;
-    default:
-      throw new IllegalStateException("should not reach here");
     }
-    encodeInteger(out, mask, prefixBits, nameIndex == -1 ? 0 : nameIndex);
+    encodeInteger(out, mask, prefixBits, if (nameIndex == -1) 0 else nameIndex);
     if (nameIndex == -1) {
       encodeStringLiteral(out, name);
     }
     encodeStringLiteral(out, value);
   }
 
-  private int getNameIndex(byte[] name) {
-    int index = StaticTable.getIndex(name);
+  private def getNameIndex(name: Array[Byte]): Int = {
+    var index = StaticTable.getIndex(name);
     if (index == -1) {
       index = getIndex(name);
       if (index >= 0) {
@@ -242,11 +242,12 @@ public final class Encoder {
    * Ensure that the dynamic table has enough room to hold 'headerSize' more bytes.
    * Removes the oldest entry from the dynamic table until sufficient space is available.
    */
-  private void ensureCapacity(int headerSize) throws IOException {
+  @throws[IOException]
+  private[this] def ensureCapacity(headerSize: Int): Unit = {
     while (size + headerSize > capacity) {
-      int index = length();
+      val index = length();
       if (index == 0) {
-        break;
+        return;
       }
       remove();
     }
@@ -256,26 +257,20 @@ public final class Encoder {
    * Return the number of header fields in the dynamic table.
    * Exposed for testing.
    */
-  int length() {
-    return size == 0 ? 0 : head.after.index - head.before.index + 1;
-  }
-
-  /**
-   * Return the size of the dynamic table.
-   * Exposed for testing.
-   */
-  int size() {
-    return size;
+  private[hpack] def length(): Int = {
+    return if (size == 0) 0 else (head.after.index - head.before.index + 1);
   }
 
   /**
    * Return the header field at the given index.
    * Exposed for testing.
    */
-  HeaderField getHeaderField(int index) {
-    HeaderEntry entry = head;
-    while(index-- >= 0) {
+  private[hpack] def getHeaderField(_index: Int): HeaderField = {
+    var index = _index;
+    var entry = head;
+    while(index >= 0) {
       entry = entry.before;
+      index -= 1
     }
     return entry;
   }
@@ -284,18 +279,20 @@ public final class Encoder {
    * Returns the header entry with the lowest index value for the header field.
    * Returns null if header field is not in the dynamic table.
    */
-  private HeaderEntry getEntry(byte[] name, byte[] value) {
+  private[this] def getEntry(name: Array[Byte], value: Array[Byte]): HeaderEntry = {
     if (length() == 0 || name == null || value == null) {
       return null;
     }
-    int h = hash(name);
-    int i = index(h);
-    for (HeaderEntry e = headerFields[i]; e != null; e = e.next) {
+    val h = hash(name);
+    val i = index(h);
+    var e = headerFields(i)
+    while (e != null) {
       if (e.hash == h &&
           HpackUtil.equals(name, e.name) &&
           HpackUtil.equals(value, e.value)) {
         return e;
       }
+      e = e.next
     }
     return null;
   }
@@ -304,18 +301,20 @@ public final class Encoder {
    * Returns the lowest index value for the header field name in the dynamic table.
    * Returns -1 if the header field name is not in the dynamic table.
    */
-  private int getIndex(byte[] name) {
+  private[this] def getIndex(name: Array[Byte]): Int = {
     if (length() == 0 || name == null) {
       return -1;
     }
-    int h = hash(name);
-    int i = index(h);
-    int index = -1;
-    for (HeaderEntry e = headerFields[i]; e != null; e = e.next) {
+    var h = hash(name);
+    var i = this.index(h);
+    var index = -1;
+    var e = headerFields(i);
+    while (e != null) {
       if (e.hash == h && HpackUtil.equals(name, e.name)) {
         index = e.index;
-        break;
+        return getIndex(index);
       }
+      e = e.next
     }
     return getIndex(index);
   }
@@ -323,7 +322,7 @@ public final class Encoder {
   /**
    * Compute the index into the dynamic table given the index in the header entry.
    */
-  private int getIndex(int index) {
+  private[this] def getIndex(index: Int): Int = {
     if (index == -1) {
       return index;
     }
@@ -337,8 +336,11 @@ public final class Encoder {
    * If the size of the new entry is larger than the table's capacity,
    * the dynamic table will be cleared.
    */
-  private void add(byte[] name, byte[] value) {
-    int headerSize = HeaderField.sizeOf(name, value);
+  private[this] def add(_name: Array[Byte], _value: Array[Byte]): Unit = {
+    var name = _name
+    var value = _value
+
+    var headerSize = HeaderField.sizeOf(name, value);
 
     // Clear the table if the header field size is larger than the capacity.
     if (headerSize > capacity) {
@@ -355,11 +357,11 @@ public final class Encoder {
     name = Arrays.copyOf(name, name.length);
     value = Arrays.copyOf(value, value.length);
 
-    int h = hash(name);
-    int i = index(h);
-    HeaderEntry old = headerFields[i];
-    HeaderEntry e = new HeaderEntry(h, name, value, head.before.index - 1, old);
-    headerFields[i] = e;
+    val h = hash(name);
+    val i = index(h);
+    val old = headerFields(i);
+    val e = new HeaderEntry(h, name, value, head.before.index - 1, old);
+    headerFields(i) = e;
     e.addBefore(head);
     size += headerSize;
   }
@@ -367,20 +369,20 @@ public final class Encoder {
   /**
    * Remove and return the oldest header field from the dynamic table.
    */
-  private HeaderField remove() {
+  private[this] def remove(): HeaderField = {
     if (size == 0) {
       return null;
     }
-    HeaderEntry eldest = head.after;
-    int h = eldest.hash;
-    int i = index(h);
-    HeaderEntry prev = headerFields[i];
-    HeaderEntry e = prev;
+    val eldest = head.after;
+    val h = eldest.hash;
+    val i = index(h);
+    var prev = headerFields(i);
+    var e = prev;
     while (e != null) {
-      HeaderEntry next = e.next;
+      val next = e.next;
       if (e == eldest) {
         if (prev == eldest) {
-          headerFields[i] = next;
+          headerFields(i) = next;
         } else {
           prev.next = next;
         }
@@ -397,19 +399,22 @@ public final class Encoder {
   /**
    * Remove all entries from the dynamic table.
    */
-  private void clear() {
-    Arrays.fill(headerFields, null);
-    head.before = head.after = head;
+  private[this] def clear(): Unit = {
+    Arrays.fill(headerFields.asInstanceOf[Array[AnyRef]], null);
+    head.before = head;
+    head.after = head;
     this.size = 0;
   }
 
   /**
    * Returns the hash code for the given header field name.
    */
-  private static int hash(byte[] name) {
-    int h = 0;
-    for (int i = 0; i < name.length; i++) {
-      h = 31 * h + name[i];
+  private[this] def hash(name: Array[Byte]): Int = {
+    var h = 0;
+    var i = 0
+    while (i < name.length) {
+      h = 31 * h + name(i);
+      i += 1
     }
     if (h > 0) {
       return h;
@@ -423,38 +428,28 @@ public final class Encoder {
   /**
    * Returns the index into the hash table for the hash code h.
    */
-  private static int index(int h) {
+  private[this] def index(h: Int): Int = {
     return h % BUCKET_SIZE;
   }
 
   /**
    * A linked hash map HeaderField entry.
    */
-  private static class HeaderEntry extends HeaderField {
+  private[this] class HeaderEntry(
+    val hash: Int,
+    name: Array[Byte],
+    value: Array[Byte],
+    val index: Int,
+    var next: HeaderEntry
+  ) extends HeaderField(name, value) {
     // These fields comprise the doubly linked list used for iteration.
-    HeaderEntry before, after;
-
-    // These fields comprise the chained list for header fields with the same hash.
-    HeaderEntry next;
-    int hash;
-
-    // This is used to compute the index in the dynamic table.
-    int index;
-
-    /**
-     * Creates new entry.
-     */
-    HeaderEntry(int hash, byte[] name, byte[] value, int index, HeaderEntry next) {
-      super(name, value);
-      this.index = index;
-      this.hash = hash;
-      this.next = next;
-    }
+    var before: HeaderEntry = _
+    var after: HeaderEntry = _
 
     /**
      * Removes this entry from the linked list.
      */
-    private void remove() {
+    def remove(): Unit = {
       before.after = after;
       after.before = before;
       before = null; // null reference to prevent nepotism with generational GC.
@@ -465,7 +460,7 @@ public final class Encoder {
     /**
      * Inserts this entry before the specified existing entry in the list.
      */
-    private void addBefore(HeaderEntry existingEntry) {
+    def addBefore(existingEntry: HeaderEntry): Unit = {
       after  = existingEntry;
       before = existingEntry.before;
       before.after = this;
