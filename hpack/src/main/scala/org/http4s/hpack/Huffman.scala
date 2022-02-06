@@ -36,14 +36,12 @@ import com.twitter.hpack.HpackUtil.HUFFMAN_CODES;
 
 object Huffman {
 
-  /**
-   * Huffman Decoder
-   */
+  /** Huffman Decoder
+    */
   val DECODER = new HuffmanDecoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
 
-  /**
-   * Huffman Encoder
-   */
+  /** Huffman Encoder
+    */
   val ENCODER = new HuffmanEncoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
 
 }
