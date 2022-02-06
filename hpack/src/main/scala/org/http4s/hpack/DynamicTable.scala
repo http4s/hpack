@@ -29,9 +29,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
-import com.twitter.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
+import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
 final class DynamicTable {
 

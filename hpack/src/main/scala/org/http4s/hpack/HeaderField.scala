@@ -29,10 +29,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
-import com.twitter.hpack.HpackUtil.ISO_8859_1;
-import com.twitter.hpack.HpackUtil.requireNonNull;
+import org.http4s.hpack.HpackUtil.ISO_8859_1;
+import org.http4s.hpack.HpackUtil.requireNonNull;
 
 object HeaderField {
   // Section 4.1. Calculating Table Size

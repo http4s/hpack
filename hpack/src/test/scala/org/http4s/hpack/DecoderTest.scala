@@ -29,13 +29,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack
+package org.http4s.hpack
 
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import org.junit.Before
 import org.junit.Test
-import com.twitter.hpack.HpackUtil.ISO_8859_1
+import org.http4s.hpack.HpackUtil.ISO_8859_1
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

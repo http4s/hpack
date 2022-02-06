@@ -29,14 +29,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.twitter.hpack.HpackUtil.ISO_8859_1;
+import org.http4s.hpack.HpackUtil.ISO_8859_1;
 
 object StaticTable {
 

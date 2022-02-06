@@ -29,14 +29,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.twitter.hpack.HpackUtil.IndexType;
+import org.http4s.hpack.HpackUtil.IndexType;
 
-import com.twitter.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
+import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
 final class Decoder(dynamicTable: DynamicTable) {
 

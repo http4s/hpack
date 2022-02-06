@@ -31,7 +31,7 @@
  * limitations under the License.
  */
 
-package com.twitter.hpack
+package org.http4s.hpack
 
 import java.io.IOException
 

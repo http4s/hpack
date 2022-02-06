@@ -29,7 +29,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,7 +44,7 @@ final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
     * @param  out  the output stream for the compressed data
     * @param  data the string literal to be Huffman encoded
     * @throws IOException if an I/O error occurs.
-    * @see    com.twitter.hpack.HuffmanEncoder#encode(OutputStream, byte[], int, int)
+    * @see    org.http4s.hpack.HuffmanEncoder#encode(OutputStream, byte[], int, int)
     */
   @throws[IOException]
   def encode(out: OutputStream, data: Array[Byte]): Unit =

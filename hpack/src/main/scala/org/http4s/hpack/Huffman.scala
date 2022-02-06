@@ -29,10 +29,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.twitter.hpack;
+package org.http4s.hpack;
 
-import com.twitter.hpack.HpackUtil.HUFFMAN_CODE_LENGTHS;
-import com.twitter.hpack.HpackUtil.HUFFMAN_CODES;
+import org.http4s.hpack.HpackUtil.HUFFMAN_CODE_LENGTHS;
+import org.http4s.hpack.HpackUtil.HUFFMAN_CODES;
 
 object Huffman {
 
