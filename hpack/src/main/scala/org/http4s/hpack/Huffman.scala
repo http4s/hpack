@@ -31,22 +31,19 @@
  */
 package com.twitter.hpack;
 
-import static com.twitter.hpack.HpackUtil.HUFFMAN_CODE_LENGTHS;
-import static com.twitter.hpack.HpackUtil.HUFFMAN_CODES;
+import com.twitter.hpack.HpackUtil.HUFFMAN_CODE_LENGTHS;
+import com.twitter.hpack.HpackUtil.HUFFMAN_CODES;
 
-public final class Huffman {
+object Huffman {
 
   /**
    * Huffman Decoder
    */
-  public static final HuffmanDecoder DECODER = new HuffmanDecoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
+  val DECODER = new HuffmanDecoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
 
   /**
    * Huffman Encoder
    */
-  public static final HuffmanEncoder ENCODER = new HuffmanEncoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
+  val ENCODER = new HuffmanEncoder(HUFFMAN_CODES, HUFFMAN_CODE_LENGTHS);
 
-  private Huffman() {
-    // utility class
-  }
 }
