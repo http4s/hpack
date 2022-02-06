@@ -3,6 +3,7 @@ ThisBuild / startYear := Some(2022)
 ThisBuild / organization := "com.armanbilge"
 ThisBuild / tlFatalWarningsInCi := false
 ThisBuild / tlUntaggedAreSnapshots := true
+ThisBuild / crossScalaVersions := Seq("2.12.15", "3.1.1", "2.13.8")
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
 
 lazy val root = tlCrossRootProject.aggregate(hpack)

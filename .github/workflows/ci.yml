@@ -28,10 +28,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.15]
+        scala: [2.12.15, 3.1.1, 2.13.8]
         java: [temurin@8, temurin@11]
         project: [rootJS, rootJVM]
         exclude:
+          - scala: 2.12.15
+            java: temurin@11
+          - scala: 3.1.1
+            java: temurin@11
           - project: rootJS
             java: temurin@11
     runs-on: ${{ matrix.os }}
@@ -115,7 +119,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.15]
+        scala: [2.13.8]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -166,6 +170,46 @@ jobs:
           name: target-${{ matrix.os }}-${{ matrix.java }}-2.12.15-rootJVM
 
       - name: Inflate target directories (2.12.15, rootJVM)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.1.1, rootJS)
+        uses: actions/download-artifact@v2
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.1-rootJS
+
+      - name: Inflate target directories (3.1.1, rootJS)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3.1.1, rootJVM)
+        uses: actions/download-artifact@v2
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.1-rootJVM
+
+      - name: Inflate target directories (3.1.1, rootJVM)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (2.13.8, rootJS)
+        uses: actions/download-artifact@v2
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-2.13.8-rootJS
+
+      - name: Inflate target directories (2.13.8, rootJS)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (2.13.8, rootJVM)
+        uses: actions/download-artifact@v2
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-2.13.8-rootJVM
+
+      - name: Inflate target directories (2.13.8, rootJVM)
         run: |
           tar xf targets.tar
           rm targets.tar
