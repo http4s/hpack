@@ -33,20 +33,22 @@ package com.twitter.hpack;
 
 import java.nio.charset.Charset;
 
-final class HpackUtil {
+object HpackUtil {
 
-  static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+  val ISO_8859_1 = Charset.forName("ISO-8859-1");
 
   /**
    * A string compare that doesn't leak timing information.
    */
-  static boolean equals(byte[] s1, byte[] s2) {
+  def equals(s1: Array[Byte], s2: Array[Byte]): Boolean = {
     if (s1.length != s2.length) {
       return false;
     }
-    char c = 0;
-    for (int i = 0; i < s1.length; i++) {
-      c |= (s1[i] ^ s2[i]);
+    var c: Char = 0;
+    var i = 0
+    while (i < s1.length) {
+      c = (c | (s1(i) ^ s2(i))).toChar;
+      i += 1
     }
     return c == 0;
   }
@@ -54,22 +56,23 @@ final class HpackUtil {
   /**
    * Checks that the specified object reference is not {@code null}.
    */
-  static <T> T requireNonNull(T obj) {
-    if (obj == null)
+  def requireNonNull[T <: AnyRef](obj: T): T = {
+    if (obj eq null)
       throw new NullPointerException();
     return obj;
   }
 
   // Section 6.2. Literal Header Field Representation
-  enum IndexType {
-    INCREMENTAL, // Section 6.2.1. Literal Header Field with Incremental Indexing
-    NONE,        // Section 6.2.2. Literal Header Field without Indexing
-    NEVER        // Section 6.2.3. Literal Header Field never Indexed
+  sealed abstract class IndexType
+  object IndexType {
+    case object INCREMENTAL extends IndexType // Section 6.2.1. Literal Header Field with Incremental Indexing
+    case object NONE extends IndexType        // Section 6.2.2. Literal Header Field without Indexing
+    case object NEVER extends IndexType       // Section 6.2.3. Literal Header Field never Indexed
   }
 
   // Appendix B: Huffman Codes
   // http://tools.ietf.org/html/rfc7541#appendix-B
-  static final int[] HUFFMAN_CODES = {
+  val HUFFMAN_CODES: Array[Int] = Array(
       0x1ff8,
       0x7fffd8,
       0xfffffe2,
@@ -327,9 +330,9 @@ final class HpackUtil {
       0x7fffff0,
       0x3ffffee,
       0x3fffffff // EOS
-  };
+  );
 
-  static final byte[] HUFFMAN_CODE_LENGTHS = {
+  val HUFFMAN_CODE_LENGTHS: Array[Byte] = Array(
       13, 23, 28, 28, 28, 28, 28, 28, 28, 24, 30, 28, 28, 30, 28, 28,
       28, 28, 28, 28, 28, 28, 30, 28, 28, 28, 28, 28, 28, 28, 28, 28,
        6, 10, 10, 12, 13,  6,  8, 11, 10, 10,  8, 11,  8,  6,  6,  6,
@@ -347,11 +350,8 @@ final class HpackUtil {
       20, 24, 20, 21, 22, 21, 21, 23, 22, 22, 25, 25, 24, 24, 26, 23,
       26, 27, 26, 26, 27, 27, 27, 27, 27, 28, 27, 27, 27, 27, 27, 26,
       30 // EOS
-  };
+  );
 
-  static final int HUFFMAN_EOS = 256;
+  val HUFFMAN_EOS = 256;
 
-  private HpackUtil() {
-    // utility class
-  }
 }
