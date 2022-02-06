@@ -40,9 +40,8 @@ object HeaderField {
   // overhead associated with the structure.
   val HEADER_ENTRY_OVERHEAD = 32;
 
-  def sizeOf(name: Array[Byte], value: Array[Byte]): Int = {
+  def sizeOf(name: Array[Byte], value: Array[Byte]): Int =
     return name.length + value.length + HEADER_ENTRY_OVERHEAD;
-  }
 }
 
 class HeaderField(val name: Array[Byte], val value: Array[Byte]) extends Comparable[HeaderField] {
@@ -50,13 +49,11 @@ class HeaderField(val name: Array[Byte], val value: Array[Byte]) extends Compara
   requireNonNull(value)
 
   // This constructor can only be used if name and value are ISO-8859-1 encoded.
-  def this(name: String, value: String) {
+  def this(name: String, value: String) =
     this(name.getBytes(ISO_8859_1), value.getBytes(ISO_8859_1));
-  }
 
-  def size(): Int = {
+  def size(): Int =
     return name.length + value.length + HeaderField.HEADER_ENTRY_OVERHEAD;
-  }
 
   override def compareTo(anotherHeaderField: HeaderField): Int = {
     var ret = compareTo(name, anotherHeaderField.name);
