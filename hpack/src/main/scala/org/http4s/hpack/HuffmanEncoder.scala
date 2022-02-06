@@ -34,42 +34,40 @@ package com.twitter.hpack;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * Creates a new Huffman encoder with the specified Huffman coding.
- * @param codes   the Huffman codes indexed by symbol
- * @param lengths the length of each Huffman code
- */
+/** Creates a new Huffman encoder with the specified Huffman coding.
+  * @param codes   the Huffman codes indexed by symbol
+  * @param lengths the length of each Huffman code
+  */
 final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
 
-  /**
-   * Compresses the input string literal using the Huffman coding.
-   * @param  out  the output stream for the compressed data
-   * @param  data the string literal to be Huffman encoded
-   * @throws IOException if an I/O error occurs.
-   * @see    com.twitter.hpack.HuffmanEncoder#encode(OutputStream, byte[], int, int)
-   */
+  /** Compresses the input string literal using the Huffman coding.
+    * @param  out  the output stream for the compressed data
+    * @param  data the string literal to be Huffman encoded
+    * @throws IOException if an I/O error occurs.
+    * @see    com.twitter.hpack.HuffmanEncoder#encode(OutputStream, byte[], int, int)
+    */
   @throws[IOException]
-  def encode(out: OutputStream, data: Array[Byte]): Unit = {
+  def encode(out: OutputStream, data: Array[Byte]): Unit =
     encode(out, data, 0, data.length);
-  }
 
-  /**
-   * Compresses the input string literal using the Huffman coding.
-   * @param  out  the output stream for the compressed data
-   * @param  data the string literal to be Huffman encoded
-   * @param  off  the start offset in the data
-   * @param  len  the number of bytes to encode
-   * @throws IOException if an I/O error occurs. In particular,
-   *         an <code>IOException</code> may be thrown if the
-   *         output stream has been closed.
-   */
+  /** Compresses the input string literal using the Huffman coding.
+    * @param  out  the output stream for the compressed data
+    * @param  data the string literal to be Huffman encoded
+    * @param  off  the start offset in the data
+    * @param  len  the number of bytes to encode
+    * @throws IOException if an I/O error occurs. In particular,
+    *         an <code>IOException</code> may be thrown if the
+    *         output stream has been closed.
+    */
   @throws[IOException]
   def encode(out: OutputStream, data: Array[Byte], off: Int, len: Int): Unit = {
     if (out == null) {
       throw new NullPointerException("out");
     } else if (data == null) {
       throw new NullPointerException("data");
-    } else if (off < 0 || len < 0 || (off + len) < 0 || off > data.length || (off + len) > data.length) {
+    } else if (
+      off < 0 || len < 0 || (off + len) < 0 || off > data.length || (off + len) > data.length
+    ) {
       throw new IndexOutOfBoundsException();
     } else if (len == 0) {
       return;
@@ -80,7 +78,7 @@ final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
 
     var i = 0
     while (i < len) {
-      val b = data(off + i) & 0xFF;
+      val b = data(off + i) & 0xff;
       val code = codes(b);
       val nbits = lengths(b);
 
@@ -97,16 +95,15 @@ final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
 
     if (n > 0) {
       current <<= (8 - n);
-      current |= (0xFF >>> n); // this should be EOS symbol
+      current |= (0xff >>> n); // this should be EOS symbol
       out.write(current.toInt);
     }
   }
 
-  /**
-   * Returns the number of bytes required to Huffman encode the input string literal.
-   * @param  data the string literal to be Huffman encoded
-   * @return the number of bytes required to Huffman encode <code>data</code>
-   */
+  /** Returns the number of bytes required to Huffman encode the input string literal.
+    * @param  data the string literal to be Huffman encoded
+    * @return the number of bytes required to Huffman encode <code>data</code>
+    */
   def getEncodedLength(data: Array[Byte]): Int = {
     if (data == null) {
       throw new NullPointerException("data");
@@ -115,7 +112,7 @@ final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
     var i = 0
     while (i < data.length) {
       val b = data(i)
-      len += lengths(b & 0xFF);
+      len += lengths(b & 0xff);
       i += 1
     }
     return ((len + 7) >> 3).toInt;
