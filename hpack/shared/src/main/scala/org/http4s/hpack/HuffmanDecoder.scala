@@ -115,7 +115,7 @@ private[http4s] final class HuffmanDecoder(root: Node) {
 
 private[http4s] object HuffmanDecoder {
 
-  private final class Node(
+  private[hpack] final class Node(
       val symbol: Int, // terminal nodes have a symbol
       val bits: Int, // number of bits matched by the node
       val children: Array[Node], // internal nodes have children
