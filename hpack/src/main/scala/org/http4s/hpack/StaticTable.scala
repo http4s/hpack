@@ -36,15 +36,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.twitter.hpack.HpackUtil.ISO_8859_1;
+import com.twitter.hpack.HpackUtil.ISO_8859_1;
 
-final class StaticTable {
+object StaticTable {
 
-  private static final String EMPTY = "";
+  private val EMPTY = "";
 
   // Appendix A: Static Table
   // http://tools.ietf.org/html/rfc7541#appendix-A
-  private static final List<HeaderField> STATIC_TABLE = Arrays.asList(
+  private val STATIC_TABLE = Arrays.asList(
     /*  1 */ new HeaderField(":authority", EMPTY),
     /*  2 */ new HeaderField(":method", "GET"),
     /*  3 */ new HeaderField(":method", "POST"),
@@ -108,17 +108,17 @@ final class StaticTable {
     /* 61 */ new HeaderField("www-authenticate", EMPTY)
   );
 
-  private static final Map<String, Integer> STATIC_INDEX_BY_NAME = createMap();
+  private val STATIC_INDEX_BY_NAME = createMap();
 
   /**
    * The number of header fields in the static table.
    */
-  static final int length = STATIC_TABLE.size();
+  val length = STATIC_TABLE.size();
 
   /**
    * Return the header field at the given index value.
    */
-  static HeaderField getEntry(int index) {
+  def getEntry(index: Int): HeaderField = {
     return STATIC_TABLE.get(index - 1);
   }
 
@@ -126,9 +126,9 @@ final class StaticTable {
    * Returns the lowest index value for the given header field name in the static table.
    * Returns -1 if the header field name is not in the static table.
    */
-  static int getIndex(byte[] name) {
-    String nameString = new String(name, 0, name.length, ISO_8859_1);
-    Integer index = STATIC_INDEX_BY_NAME.get(nameString);
+  def getIndex(name: Array[Byte]): Int = {
+    val nameString = new String(name, 0, name.length, ISO_8859_1);
+    val index = STATIC_INDEX_BY_NAME.get(nameString);
     if (index == null) {
       return -1;
     }
@@ -139,41 +139,41 @@ final class StaticTable {
    * Returns the index value for the given header field in the static table.
    * Returns -1 if the header field is not in the static table.
    */
-  static int getIndex(byte[] name, byte[] value) {
-    int index = getIndex(name);
+  def getIndex(name: Array[Byte], value: Array[Byte]): Int = {
+    var index = getIndex(name);
     if (index == -1) {
       return -1;
     }
 
     // Note this assumes all entries for a given header field are sequential.
     while (index <= length) {
-      HeaderField entry = getEntry(index);
+      val entry = getEntry(index);
       if (!HpackUtil.equals(name, entry.name)) {
-        break;
+        return -1;
       }
       if (HpackUtil.equals(value, entry.value)) {
         return index;
       }
-      index++;
+      index += 1;
     }
 
     return -1;
   }
 
   // create a map of header name to index value to allow quick lookup
-  private static Map<String, Integer> createMap() {
-    int length = STATIC_TABLE.size();
-    HashMap<String, Integer> ret = new HashMap<String, Integer>(length);
+  private def createMap(): Map[String, Integer] = {
+    val length = STATIC_TABLE.size();
+    val ret = new HashMap[String, Integer](length);
     // Iterate through the static table in reverse order to
     // save the smallest index for a given name in the map.
-    for (int index = length; index > 0; index--) {
-      HeaderField entry = getEntry(index);
-      String name = new String(entry.name, 0, entry.name.length, ISO_8859_1);
+    var index = length;
+    while (index > 0) {
+      val entry = getEntry(index);
+      val name = new String(entry.name, 0, entry.name.length, ISO_8859_1);
       ret.put(name, index);
+      index -= 1;
     }
     return ret;
   }
 
-  // singleton
-  private StaticTable() {}
 }
