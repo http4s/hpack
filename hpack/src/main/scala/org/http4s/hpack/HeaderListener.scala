@@ -33,9 +33,8 @@ package com.twitter.hpack;
 
 trait HeaderListener {
 
-  /**
-   * emitHeader is called by the decoder during header field emission.
-   * The name and value byte arrays must not be modified.
-   */
+  /** emitHeader is called by the decoder during header field emission.
+    * The name and value byte arrays must not be modified.
+    */
   def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit;
 }
