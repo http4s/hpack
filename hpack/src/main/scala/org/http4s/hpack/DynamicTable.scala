@@ -31,29 +31,30 @@
  */
 package com.twitter.hpack;
 
-import static com.twitter.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
+import com.twitter.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
 final class DynamicTable {
 
   // a circular queue of header fields
-  HeaderField[] headerFields;
-  int head;
-  int tail;
-  private int size;
-  private int capacity = -1; // ensure setCapacity creates the array
+  var headerFields: Array[HeaderField] = _;
+  var head: Int = _;
+  var tail: Int = _;
+  var size: Int = _;
+  var capacity = -1; // ensure setCapacity creates the array
 
   /**
    * Creates a new dynamic table with the specified initial capacity.
    */
-  DynamicTable(int initialCapacity) {
+  def this(initialCapacity: Int) {
+    this()
     setCapacity(initialCapacity);
   }
 
   /**
    * Return the number of header fields in the dynamic table.
    */
-  public int length() {
-    int length;
+  def length(): Int = {
+    var length: Int = 0;
     if (head < tail) {
       length = headerFields.length - tail + head;
     } else {
@@ -63,34 +64,19 @@ final class DynamicTable {
   }
 
   /**
-   * Return the current size of the dynamic table.
-   * This is the sum of the size of the entries.
-   */
-  public int size() {
-    return size;
-  }
-
-  /**
-   * Return the maximum allowable size of the dynamic table.
-   */
-  public int capacity() {
-    return capacity;
-  }
-
-  /**
    * Return the header field at the given index.
    * The first and newest entry is always at index 1,
    * and the oldest entry is at the index length().
    */
-  public HeaderField getEntry(int index) {
+  def getEntry(index: Int): HeaderField = {
     if (index <= 0 || index > length()) {
       throw new IndexOutOfBoundsException();
     }
-    int i = head - index;
+    val i = head - index;
     if (i < 0) {
-      return headerFields[i + headerFields.length];
+      return headerFields(i + headerFields.length);
     } else {
-      return headerFields[i];
+      return headerFields(i);
     }
   }
 
@@ -101,8 +87,8 @@ final class DynamicTable {
    * If the size of the new entry is larger than the table's capacity,
    * the dynamic table will be cleared.
    */
-  public void add(HeaderField header) {
-    int headerSize = header.size();
+  def add(header: HeaderField): Unit = {
+    val headerSize = header.size();
     if (headerSize > capacity) {
       clear();
       return;
@@ -110,7 +96,8 @@ final class DynamicTable {
     while (size + headerSize > capacity) {
       remove();
     }
-    headerFields[head++] = header;
+    headerFields(head) = header;
+    head += 1
     size += header.size();
     if (head == headerFields.length) {
       head = 0;
@@ -120,13 +107,14 @@ final class DynamicTable {
   /**
    * Remove and return the oldest header field from the dynamic table.
    */
-  public HeaderField remove() {
-    HeaderField removed = headerFields[tail];
+  def remove(): HeaderField = {
+    val removed = headerFields(tail);
     if (removed == null) {
       return null;
     }
     size -= removed.size();
-    headerFields[tail++] = null;
+    headerFields(tail) = null;
+    tail += 1
     if (tail == headerFields.length) {
       tail = 0;
     }
@@ -136,9 +124,10 @@ final class DynamicTable {
   /**
    * Remove all entries from the dynamic table.
    */
-  public void clear() {
+  def clear(): Unit = {
     while (tail != head) {
-      headerFields[tail++] = null;
+      headerFields(tail) = null;
+      tail += 1
       if (tail == headerFields.length) {
         tail = 0;
       }
@@ -153,7 +142,7 @@ final class DynamicTable {
    * Entries are evicted from the dynamic table until the size of the table
    * is less than or equal to the maximum size.
    */
-  public void setCapacity(int capacity) {
+  def setCapacity(capacity: Int): Unit = {
     if (capacity < 0) {
       throw new IllegalArgumentException("Illegal Capacity: "+ capacity);
     }
@@ -173,9 +162,9 @@ final class DynamicTable {
       }
     }
 
-    int maxEntries = capacity / HEADER_ENTRY_OVERHEAD;
+    var maxEntries = capacity / HEADER_ENTRY_OVERHEAD;
     if (capacity % HEADER_ENTRY_OVERHEAD != 0) {
-      maxEntries++;
+      maxEntries += 1;
     }
 
     // check if capacity change requires us to reallocate the array
@@ -183,17 +172,20 @@ final class DynamicTable {
       return;
     }
 
-    HeaderField[] tmp = new HeaderField[maxEntries];
+    var tmp = new Array[HeaderField](maxEntries);
 
     // initially length will be 0 so there will be no copy
-    int len = length();
-    int cursor = tail;
-    for (int i = 0; i < len; i++) {
-      HeaderField entry = headerFields[cursor++];
-      tmp[i] = entry;
+    val len = length();
+    var cursor = tail;
+    var i = 0;
+    while (i < len) {
+      val entry = headerFields(cursor);
+      cursor += 1
+      tmp(i) = entry;
       if (cursor == headerFields.length) {
         cursor = 0;
       }
+      i += 1
     }
 
     this.tail = 0;

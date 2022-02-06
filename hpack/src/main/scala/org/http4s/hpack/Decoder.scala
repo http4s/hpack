@@ -230,7 +230,7 @@ final class Decoder(dynamicTable: DynamicTable) {
                 }
 
                 // Check name length against max dynamic table size
-                if (nameLength + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity()) {
+                if (nameLength + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity) {
                   dynamicTable.clear();
                   name = EMPTY;
                   skipLength = nameLength;
@@ -269,7 +269,7 @@ final class Decoder(dynamicTable: DynamicTable) {
               }
 
               // Check name length against max dynamic table size
-              if (nameLength + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity()) {
+              if (nameLength + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity) {
                 dynamicTable.clear();
                 name = EMPTY;
                 skipLength = nameLength;
@@ -323,7 +323,7 @@ final class Decoder(dynamicTable: DynamicTable) {
                 }
 
                 // Check new header size against max dynamic table size
-                if (newHeaderSize + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity()) {
+                if (newHeaderSize + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity) {
                   dynamicTable.clear();
                   state = State.SKIP_LITERAL_HEADER_VALUE;
                   return;
@@ -369,7 +369,7 @@ final class Decoder(dynamicTable: DynamicTable) {
               }
 
               // Check new header size against max dynamic table size
-              if (newHeaderSize + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity()) {
+              if (newHeaderSize + HEADER_ENTRY_OVERHEAD > dynamicTable.capacity) {
                 dynamicTable.clear();
                 state = State.SKIP_LITERAL_HEADER_VALUE;
                 return;
@@ -430,7 +430,7 @@ final class Decoder(dynamicTable: DynamicTable) {
     * This is the maximum size allowed by both the encoder and the decoder.
     */
   def getMaxHeaderTableSize(): Int =
-    return dynamicTable.capacity();
+    return dynamicTable.capacity;
 
   /** Return the number of header fields in the dynamic table.
     * Exposed for testing.
@@ -442,7 +442,7 @@ final class Decoder(dynamicTable: DynamicTable) {
     * Exposed for testing.
     */
   private[hpack] def size(): Int =
-    return dynamicTable.size();
+    return dynamicTable.size;
 
   /** Return the header field at the given index.
     * Exposed for testing.
