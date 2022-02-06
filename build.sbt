@@ -1,6 +1,7 @@
 ThisBuild / tlBaseVersion := "1.0"
 ThisBuild / startYear := Some(2022)
 ThisBuild / organization := "com.armanbilge"
+ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
 ThisBuild / tlSonatypeUseLegacyHost := false
 ThisBuild / tlFatalWarningsInCi := false
 ThisBuild / tlUntaggedAreSnapshots := false
