@@ -38,7 +38,7 @@ import java.io.OutputStream;
   * @param codes   the Huffman codes indexed by symbol
   * @param lengths the length of each Huffman code
   */
-final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
+private[http4s] final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byte]) {
 
   /** Compresses the input string literal using the Huffman coding.
     * @param  out  the output stream for the compressed data

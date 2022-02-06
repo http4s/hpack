@@ -33,7 +33,7 @@ package org.http4s.hpack;
 
 import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
-final class DynamicTable {
+private[http4s] final class DynamicTable {
 
   // a circular queue of header fields
   var headerFields: Array[HeaderField] = _;

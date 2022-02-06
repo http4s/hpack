@@ -38,7 +38,7 @@ import java.util.Map;
 
 import org.http4s.hpack.HpackUtil.ISO_8859_1;
 
-object StaticTable {
+private[http4s] object StaticTable {
 
   private val EMPTY = "";
 

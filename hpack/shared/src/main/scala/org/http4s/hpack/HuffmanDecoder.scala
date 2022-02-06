@@ -36,7 +36,7 @@ import java.io.IOException;
 
 import HuffmanDecoder._
 
-final class HuffmanDecoder(root: Node) {
+private[http4s] final class HuffmanDecoder(root: Node) {
 
   private[this] val EOS_DECODED = new IOException("EOS Decoded");
   private[this] val INVALID_PADDING = new IOException("Invalid Padding");
@@ -113,7 +113,7 @@ final class HuffmanDecoder(root: Node) {
 
 }
 
-object HuffmanDecoder {
+private[http4s] object HuffmanDecoder {
 
   private final class Node(
       val symbol: Int, // terminal nodes have a symbol

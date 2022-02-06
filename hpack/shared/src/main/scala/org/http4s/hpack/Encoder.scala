@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import org.http4s.hpack.HpackUtil.IndexType;
 
-final class Encoder(
+private[http4s] final class Encoder(
     // for testing
     useIndexing: Boolean,
     forceHuffmanOn: Boolean,

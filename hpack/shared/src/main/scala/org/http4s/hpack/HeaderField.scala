@@ -34,7 +34,7 @@ package org.http4s.hpack;
 import org.http4s.hpack.HpackUtil.ISO_8859_1;
 import org.http4s.hpack.HpackUtil.requireNonNull;
 
-object HeaderField {
+private[http4s] object HeaderField {
   // Section 4.1. Calculating Table Size
   // The additional 32 octets account for an estimated
   // overhead associated with the structure.
@@ -44,7 +44,8 @@ object HeaderField {
     return name.length + value.length + HEADER_ENTRY_OVERHEAD;
 }
 
-class HeaderField(val name: Array[Byte], val value: Array[Byte]) extends Comparable[HeaderField] {
+private[http4s] class HeaderField(val name: Array[Byte], val value: Array[Byte])
+    extends Comparable[HeaderField] {
   requireNonNull(name)
   requireNonNull(value)
 

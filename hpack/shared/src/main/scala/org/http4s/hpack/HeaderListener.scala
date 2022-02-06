@@ -31,7 +31,7 @@
  */
 package org.http4s.hpack;
 
-trait HeaderListener {
+private[http4s] trait HeaderListener {
 
   /** emitHeader is called by the decoder during header field emission.
     * The name and value byte arrays must not be modified.

@@ -38,7 +38,7 @@ import org.http4s.hpack.HpackUtil.IndexType;
 
 import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
-final class Decoder(dynamicTable: DynamicTable) {
+private[http4s] final class Decoder(dynamicTable: DynamicTable) {
 
   private[this] val DECOMPRESSION_EXCEPTION =
     new IOException("decompression failure");

@@ -33,7 +33,7 @@ package org.http4s.hpack;
 
 import java.nio.charset.Charset;
 
-object HpackUtil {
+private[http4s] object HpackUtil {
 
   val ISO_8859_1 = Charset.forName("ISO-8859-1");
 

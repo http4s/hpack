@@ -34,7 +34,7 @@ package org.http4s.hpack;
 import org.http4s.hpack.HpackUtil.HUFFMAN_CODE_LENGTHS;
 import org.http4s.hpack.HpackUtil.HUFFMAN_CODES;
 
-object Huffman {
+private[http4s] object Huffman {
 
   /** Huffman Decoder
     */
