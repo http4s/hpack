@@ -1,7 +1,6 @@
 ThisBuild / tlBaseVersion := "1.0"
 ThisBuild / startYear := Some(2022)
-ThisBuild / tlCiReleaseTags := false
-ThisBuild / tlCiReleaseBranches := Seq.empty
+ThisBuild / organization := "com.armanbilge"
 ThisBuild / tlFatalWarningsInCi := false
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
 
