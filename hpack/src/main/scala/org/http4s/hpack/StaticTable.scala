@@ -105,27 +105,23 @@ object StaticTable {
     /* 58 */ new HeaderField("user-agent", EMPTY),
     /* 59 */ new HeaderField("vary", EMPTY),
     /* 60 */ new HeaderField("via", EMPTY),
-    /* 61 */ new HeaderField("www-authenticate", EMPTY)
+    /* 61 */ new HeaderField("www-authenticate", EMPTY),
   );
 
   private val STATIC_INDEX_BY_NAME = createMap();
 
-  /**
-   * The number of header fields in the static table.
-   */
+  /** The number of header fields in the static table.
+    */
   val length = STATIC_TABLE.size();
 
-  /**
-   * Return the header field at the given index value.
-   */
-  def getEntry(index: Int): HeaderField = {
+  /** Return the header field at the given index value.
+    */
+  def getEntry(index: Int): HeaderField =
     return STATIC_TABLE.get(index - 1);
-  }
 
-  /**
-   * Returns the lowest index value for the given header field name in the static table.
-   * Returns -1 if the header field name is not in the static table.
-   */
+  /** Returns the lowest index value for the given header field name in the static table.
+    * Returns -1 if the header field name is not in the static table.
+    */
   def getIndex(name: Array[Byte]): Int = {
     val nameString = new String(name, 0, name.length, ISO_8859_1);
     val index = STATIC_INDEX_BY_NAME.get(nameString);
@@ -135,10 +131,9 @@ object StaticTable {
     return index;
   }
 
-  /**
-   * Returns the index value for the given header field in the static table.
-   * Returns -1 if the header field is not in the static table.
-   */
+  /** Returns the index value for the given header field in the static table.
+    * Returns -1 if the header field is not in the static table.
+    */
   def getIndex(name: Array[Byte], value: Array[Byte]): Int = {
     var index = getIndex(name);
     if (index == -1) {
