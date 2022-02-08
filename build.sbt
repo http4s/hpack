@@ -12,6 +12,10 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "hpack",
     mimaPreviousArtifacts := Set.empty,
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-parser" % "0.14.1" % Test,
+      "com.lihaoyi" %%% "sourcecode" % "0.2.7" % Test,
+    ),
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
