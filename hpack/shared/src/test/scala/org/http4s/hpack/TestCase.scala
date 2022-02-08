@@ -206,7 +206,7 @@ object TestCase extends TestCasePlatform {
       .decodeMap[String, String]
       .map(_.toList)
       .emap {
-        case List(name -> value) => Right(new HeaderField(name, value))
+        case List((name, value)) => Right(new HeaderField(name, value))
         case _ => Left("HeaderField object must have exactly 1 entry")
       }
 
