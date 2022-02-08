@@ -22,4 +22,5 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
     ),
     doc / javacOptions ~= { _.filterNot(_ == "-Xlint:all") },
   )
+  .jvmEnablePlugins(NoPublishPlugin)
   .jsEnablePlugins(ScalaJSJUnitPlugin)
