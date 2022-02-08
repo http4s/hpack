@@ -129,14 +129,14 @@ case class TestCase(
 
   private def createEncoder() =
     new Encoder(
-      maxHeaderTableSize.getOrElse(Int.MaxValue),
+      maxHeaderTableSize.getOrElse(4096),
       useIndexing.getOrElse(true),
       forceHuffmanOn.getOrElse(false),
       forceHuffmanOff.getOrElse(false),
     );
 
   private def createDecoder() =
-    new Decoder(8192, maxHeaderTableSize.getOrElse(Int.MaxValue));
+    new Decoder(8192, maxHeaderTableSize.getOrElse(4096));
 
   @throws[IOException]
   private def encode(
