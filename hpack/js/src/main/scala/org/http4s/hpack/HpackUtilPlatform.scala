@@ -38,9 +38,9 @@ import scala.annotation.nowarn
 
 private[hpack] class HpackUtilPlatform {
 
-  // the property holding the Uint8Array backing the Array[Byte] implementation
+  // the property holding the Int8Array backing the Array[Byte] implementation
   // this lets us avoid having to copy it via the provided APIs
-  private[this] val array0Property =
+  private[this] val int8ArrayProperty =
     js.Object.getOwnPropertyNames((new Array[Byte](0)).asInstanceOf[js.Object])(0)
 
   /** A string compare that doesn't leak timing information.
@@ -48,8 +48,8 @@ private[hpack] class HpackUtilPlatform {
   @inline final def equals(s1: Array[Byte], s2: Array[Byte]): Boolean =
     if (s1.length != s2.length) false
     else {
-      val a = s1.asInstanceOf[js.Dynamic].selectDynamic(array0Property).asInstanceOf[Int8Array]
-      val b = s2.asInstanceOf[js.Dynamic].selectDynamic(array0Property).asInstanceOf[Int8Array]
+      val a = s1.asInstanceOf[js.Dynamic].selectDynamic(int8ArrayProperty).asInstanceOf[Int8Array]
+      val b = s2.asInstanceOf[js.Dynamic].selectDynamic(int8ArrayProperty).asInstanceOf[Int8Array]
       crypto.timingSafeEqual(a, b)
     }
 
