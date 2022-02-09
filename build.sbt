@@ -4,6 +4,12 @@ ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
 ThisBuild / tlFatalWarningsInCi := false
 ThisBuild / crossScalaVersions := Seq("2.12.15", "3.1.1", "2.13.8")
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
+ThisBuild / githubWorkflowBuildMatrixAdditions += "sjsStage" -> List("FastOptStage", "FullOptStage")
+ThisBuild / githubWorkflowBuildMatrixExclusions ++=
+  githubWorkflowJavaVersions.value.map { java =>
+    MatrixExclude(Map("java" -> java.render, "sjsStage" -> "FullOptStage"))
+  }
+ThisBuild / githubWorkflowBuildSbtStepPreamble += "set Global/scalaJSStage := ${{ matrix.sjsStage }}"
 
 lazy val root = tlCrossRootProject.aggregate(hpack)
 
