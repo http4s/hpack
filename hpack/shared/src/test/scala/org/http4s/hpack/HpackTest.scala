@@ -31,34 +31,30 @@
  */
 package org.http4s.hpack
 
-import java.io.File
-import java.util
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
 
-@RunWith(classOf[Parameterized]) object HpackTest {
-  private val TEST_DIR = "/hpack/"
-
-  @Parameters(name = "{0}") def data: util.Collection[Array[AnyRef]] = {
-    val url = classOf[HpackTest].getResource(TEST_DIR)
-    val files = new File(url.getFile).listFiles
-    if (files == null) throw new NullPointerException("files")
-    val data = new util.ArrayList[Array[AnyRef]]
-    for (file <- files)
-      data.add(Array[AnyRef](file.getName))
-    data
-  }
+object HpackTest {
+  val TEST_DIR = "/hpack/"
 }
 
-@RunWith(classOf[Parameterized]) class HpackTest(val fileName: String) {
-  @Test
-  @throws[Exception]
-  def test(): Unit = {
-    val is = classOf[HpackTest].getResourceAsStream(HpackTest.TEST_DIR + fileName)
-    val testCase = TestCase.load(is)
+class HpackTest {
+  def test(implicit name: sourcecode.Name): Unit = {
+    val testCase = TestCase.load(HpackTest.TEST_DIR + name.value + ".json")
     testCase.testCompress()
     testCase.testDecompress()
   }
+
+  @Test def testDuplicateHeaders = test
+  @Test def testEmpty = test
+  @Test def testEviction = test
+  @Test def testMaxHeaderTableSize = test
+  @Test def testSpecExampleC2_1 = test
+  @Test def testSpecExampleC2_2 = test
+  @Test def testSpecExampleC2_3 = test
+  @Test def testSpecExampleC2_4 = test
+  @Test def testSpecExampleC3 = test
+  @Test def testSpecExampleC4 = test
+  @Test def testSpecExampleC5 = test
+  @Test def testSpecExampleC6 = test
+  @Test def testStaticTableEntries = test
 }
