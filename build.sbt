@@ -4,6 +4,10 @@ ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
 ThisBuild / tlFatalWarningsInCi := false
 ThisBuild / crossScalaVersions := Seq("2.12.15", "3.1.1", "2.13.8")
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
+ThisBuild / githubWorkflowBuildMatrixAdditions += "sjsStage" -> List("FastOptStage", "FullOptStage")
+ThisBuild / githubWorkflowBuildMatrixExclusions +=
+  MatrixExclude(Map("project" -> "rootJVM", "sjsStage" -> "FullOptStage"))
+ThisBuild / githubWorkflowBuildSbtStepPreamble += "set Global/scalaJSStage := ${{ matrix.sjsStage }}"
 
 lazy val root = tlCrossRootProject.aggregate(hpack)
 
@@ -25,6 +29,9 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
       "com.google.code.gson" % "gson" % "2.3.1" % Test,
     ),
     doc / javacOptions ~= { _.filterNot(_ == "-Xlint:all") },
+  )
+  .jsSettings(
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .jvmEnablePlugins(NoPublishPlugin)
   .jsEnablePlugins(ScalaJSJUnitPlugin)

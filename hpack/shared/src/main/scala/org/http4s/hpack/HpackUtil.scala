@@ -33,24 +33,9 @@ package org.http4s.hpack;
 
 import java.nio.charset.Charset;
 
-private[http4s] object HpackUtil {
+private[http4s] object HpackUtil extends HpackUtilPlatform {
 
   val ISO_8859_1 = Charset.forName("ISO-8859-1");
-
-  /** A string compare that doesn't leak timing information.
-    */
-  def equals(s1: Array[Byte], s2: Array[Byte]): Boolean = {
-    if (s1.length != s2.length) {
-      return false;
-    }
-    var c: Char = 0;
-    var i = 0
-    while (i < s1.length) {
-      c = (c | (s1(i) ^ s2(i))).toChar;
-      i += 1
-    }
-    return c == 0;
-  }
 
   /** Checks that the specified object reference is not {@code null}.
     */
