@@ -39,9 +39,7 @@ jobs:
             java: temurin@11
           - project: rootJS
             java: temurin@11
-          - java: temurin@8
-            sjsStage: FullOptStage
-          - java: temurin@11
+          - project: rootJVM
             sjsStage: FullOptStage
     runs-on: ${{ matrix.os }}
     steps:
