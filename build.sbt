@@ -30,5 +30,8 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
     ),
     doc / javacOptions ~= { _.filterNot(_ == "-Xlint:all") },
   )
+  .jsSettings(
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
   .jvmEnablePlugins(NoPublishPlugin)
   .jsEnablePlugins(ScalaJSJUnitPlugin)
