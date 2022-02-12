@@ -31,6 +31,9 @@
  */
 package org.http4s.hpack
 
+import cats.kernel.Eq
+import cats.syntax.all._
+
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import org.junit.Before
@@ -39,11 +42,6 @@ import org.http4s.hpack.HpackUtil.ISO_8859_1
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
 
 object DecoderTest {
   private val MAX_HEADER_SIZE = 8192
@@ -54,9 +52,22 @@ object DecoderTest {
   private def getBytes(s: String) = s.getBytes(ISO_8859_1)
 }
 
+class MockHeaderListener extends HeaderListener {
+
+  var headers: List[(Array[Byte], Array[Byte], Boolean)] = Nil
+
+  def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit =
+    headers :+= (name, value, sensitive)
+
+  def reset() = headers = Nil
+
+}
+
 class DecoderTest {
+  implicit val byteArrayEq: Eq[Array[Byte]] = Eq.by(_.toList)
+
   private var decoder: Decoder = null
-  private var mockListener: HeaderListener = null
+  private var mockListener: MockHeaderListener = null
 
   @throws[IOException]
   private def decode(encoded: String): Unit = {
@@ -66,7 +77,7 @@ class DecoderTest {
 
   @Before def setUp(): Unit = {
     decoder = new Decoder(DecoderTest.MAX_HEADER_SIZE, DecoderTest.MAX_HEADER_TABLE_SIZE)
-    mockListener = mock(classOf[HeaderListener])
+    mockListener = new MockHeaderListener
   }
 
   @Test
@@ -157,14 +168,17 @@ class DecoderTest {
   @throws[Exception]
   def testLiteralWithIncrementalIndexingCompleteEviction(): Unit = { // Verify indexed host header
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value"))
-    verify(mockListener).addHeader(
-      DecoderTest.getBytes("name"),
-      DecoderTest.getBytes("value"),
-      false,
+    assertTrue(
+      mockListener.headers === List(
+        (
+          DecoderTest.getBytes("name"),
+          DecoderTest.getBytes("value"),
+          false,
+        )
+      )
     )
-    verifyNoMoreInteractions(mockListener)
     assertFalse(decoder.endHeaderBlock)
-    reset(mockListener)
+    mockListener.reset()
     var sb = new StringBuilder
     for (i <- 0 until 4096)
       sb.append("a")
@@ -175,21 +189,32 @@ class DecoderTest {
       sb.append("61") // 'a'
 
     decode(sb.toString)
-    verify(mockListener).addHeader(
-      DecoderTest.getBytes(":authority"),
-      DecoderTest.getBytes(value),
-      false,
+    assertTrue(
+      mockListener.headers ===
+        List(
+          (
+            DecoderTest.getBytes(":authority"),
+            DecoderTest.getBytes(value),
+            false,
+          )
+        )
     )
-    verifyNoMoreInteractions(mockListener)
     assertFalse(decoder.endHeaderBlock)
     // Verify next header is inserted at index 62
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(
-      DecoderTest.getBytes("name"),
-      DecoderTest.getBytes("value"),
-      false,
+    assertEquals(
+      mockListener.headers
+        .count(
+          _ ===
+            (
+              DecoderTest.getBytes("name"),
+              DecoderTest.getBytes("value"),
+              false,
+            )
+        )
+        .toLong,
+      2,
     )
-    verifyNoMoreInteractions(mockListener)
   }
 
   @Test
@@ -202,16 +227,20 @@ class DecoderTest {
       sb.append("61")
     sb.append("00")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     // Verify header block is reported as truncated
     assertTrue(decoder.endHeaderBlock)
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(
-      DecoderTest.getBytes("name"),
-      DecoderTest.getBytes("value"),
-      false,
+    assertTrue(
+      mockListener.headers ===
+        List.fill(2)(
+          (
+            DecoderTest.getBytes("name"),
+            DecoderTest.getBytes("value"),
+            false,
+          )
+        )
     )
-    verifyNoMoreInteractions(mockListener)
   }
 
   @Test
@@ -225,15 +254,19 @@ class DecoderTest {
     for (i <- 0 until 8192)
       sb.append("61")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     assertTrue(decoder.endHeaderBlock)
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
-    verify(mockListener, times(2)).addHeader(
-      DecoderTest.getBytes("name"),
-      DecoderTest.getBytes("value"),
-      false,
+    assertTrue(
+      mockListener.headers ===
+        List.fill(2)(
+          (
+            DecoderTest.getBytes("name"),
+            DecoderTest.getBytes("value"),
+            false,
+          )
+        )
     )
-    verifyNoMoreInteractions(mockListener)
   }
 
   @Test(expected = classOf[IOException])
@@ -250,7 +283,7 @@ class DecoderTest {
       sb.append("61")
     sb.append("00")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     assertTrue(decoder.endHeaderBlock)
     // Verify table is unmodified
     decode("BE")
@@ -266,7 +299,7 @@ class DecoderTest {
     for (i <- 0 until 8192)
       sb.append("61")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     assertTrue(decoder.endHeaderBlock)
     decode("BE")
   }
@@ -285,7 +318,7 @@ class DecoderTest {
       sb.append("61")
     sb.append("00")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     assertTrue(decoder.endHeaderBlock)
     decode("BE")
   }
@@ -300,7 +333,7 @@ class DecoderTest {
     for (i <- 0 until 8192)
       sb.append("61")
     decode(sb.toString)
-    verifyNoMoreInteractions(mockListener)
+    assertTrue(mockListener.headers.isEmpty)
     assertTrue(decoder.endHeaderBlock)
     decode("BE")
   }
