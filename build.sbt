@@ -17,6 +17,7 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
     name := "hpack",
     mimaPreviousArtifacts := Set.empty,
     libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % "2.7.0" % Test,
       "io.circe" %%% "circe-parser" % "0.14.1" % Test,
       "com.lihaoyi" %%% "sourcecode" % "0.2.7" % Test,
     ),
@@ -25,7 +26,6 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= Seq(
       "junit" % "junit" % "4.13.2" % Test,
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.mockito" % "mockito-core" % "1.9.5" % Test,
     )
   )
   .jsSettings(
