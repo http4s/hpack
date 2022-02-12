@@ -57,7 +57,7 @@ class MockHeaderListener extends HeaderListener {
   var headers: List[(Array[Byte], Array[Byte], Boolean)] = Nil
 
   def addHeader(name: Array[Byte], value: Array[Byte], sensitive: Boolean): Unit =
-    headers :+= (name, value, sensitive)
+    headers = headers ::: (name, value, sensitive) :: Nil
 
   def reset() = headers = Nil
 
@@ -206,7 +206,7 @@ class DecoderTest {
       mockListener.headers
         .count(
           _ ===
-            (
+            Tuple3(
               DecoderTest.getBytes("name"),
               DecoderTest.getBytes("value"),
               false,
