@@ -26,7 +26,6 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= Seq(
       "junit" % "junit" % "4.13.2" % Test,
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.mockito" % "mockito-core" % "1.9.5" % Test,
     )
   )
   .jsSettings(
