@@ -1,8 +1,12 @@
 ThisBuild / tlBaseVersion := "1.0"
 ThisBuild / startYear := Some(2022)
 ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
-ThisBuild / tlFatalWarningsInCi := false
+ThisBuild / tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.3").toMap
+
 ThisBuild / crossScalaVersions := Seq("2.12.15", "3.1.1", "2.13.8")
+
+ThisBuild / tlFatalWarningsInCi := false
+
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
 ThisBuild / githubWorkflowBuildMatrixAdditions += "sjsStage" -> List("FastOptStage", "FullOptStage")
 ThisBuild / githubWorkflowBuildMatrixExclusions +=
@@ -15,7 +19,6 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
   .in(file("hpack"))
   .settings(
     name := "hpack",
-    mimaPreviousArtifacts := Set.empty,
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.7.0" % Test,
       "io.circe" %%% "circe-parser" % "0.14.1" % Test,
