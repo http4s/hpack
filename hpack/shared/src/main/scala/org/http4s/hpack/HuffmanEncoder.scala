@@ -66,9 +66,9 @@ private[http4s] final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byt
     } else if (data == null) {
       throw new NullPointerException("data");
     } else if (
-      off < 0 || len < 0 || (off + len) < 0 || off > data.length || (off + len) > data.length
+      off < 0 || len < 0 || off + len < 0 || off > data.length || off + len > data.length
     ) {
-      throw new IndexOutOfBoundsException();
+      throw new IndexOutOfBoundsException;
     } else if (len == 0) {
       return;
     }
@@ -88,14 +88,14 @@ private[http4s] final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byt
 
       while (n >= 8) {
         n -= 8;
-        out.write(((current >> n).toInt));
+        out.write((current >> n).toInt);
       }
       i += 1
     }
 
     if (n > 0) {
-      current <<= (8 - n);
-      current |= (0xff >>> n); // this should be EOS symbol
+      current <<= 8 - n;
+      current |= 0xff >>> n; // this should be EOS symbol
       out.write(current.toInt);
     }
   }
@@ -115,6 +115,6 @@ private[http4s] final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byt
       len += lengths(b & 0xff);
       i += 1
     }
-    return ((len + 7) >> 3).toInt;
+    return (len + 7 >> 3).toInt;
   }
 }

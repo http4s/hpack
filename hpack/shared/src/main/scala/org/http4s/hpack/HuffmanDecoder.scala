@@ -62,7 +62,7 @@ private[http4s] final class HuffmanDecoder(root: Node) {
     */
   @throws[IOException]
   def decode(buf: Array[Byte]): Array[Byte] = {
-    val baos = new ByteArrayOutputStream();
+    val baos = new ByteArrayOutputStream;
 
     var node = root;
     var current = 0;
@@ -70,10 +70,10 @@ private[http4s] final class HuffmanDecoder(root: Node) {
     var i = 0
     while (i < buf.length) {
       val b = buf(i) & 0xff;
-      current = (current << 8) | b;
+      current = current << 8 | b;
       bits += 8;
       while (bits >= 8) {
-        val c = (current >>> (bits - 8)) & 0xff;
+        val c = current >>> bits - 8 & 0xff;
         node = node.children(c);
         bits -= node.bits;
         if (node.isTerminal()) {
@@ -89,7 +89,7 @@ private[http4s] final class HuffmanDecoder(root: Node) {
 
     var break = false
     while (!break && bits > 0) {
-      val c = (current << (8 - bits)) & 0xff;
+      val c = current << 8 - bits & 0xff;
       node = node.children(c);
       if (node.isTerminal() && node.bits <= bits) {
         bits -= node.bits;
@@ -140,7 +140,7 @@ private[http4s] object HuffmanDecoder {
   }
 
   private def buildTree(codes: Array[Int], lengths: Array[Byte]): Node = {
-    val root = new Node();
+    val root = new Node;
     var i = 0
     while (i < codes.length) {
       insert(root, i, codes(i), lengths(i));
@@ -158,16 +158,16 @@ private[http4s] object HuffmanDecoder {
         throw new IllegalStateException("invalid Huffman code: prefix not unique");
       }
       length = (length - 8).toByte;
-      val i = (code >>> length) & 0xff;
+      val i = code >>> length & 0xff;
       if (current.children(i) == null) {
-        current.children(i) = new Node();
+        current.children(i) = new Node;
       }
       current = current.children(i);
     }
 
     val terminal = new Node(symbol, length);
     val shift = 8 - length;
-    val start = (code << shift) & 0xff;
+    val start = code << shift & 0xff;
     val end = 1 << shift;
     var i = start
     while (i < start + end) {

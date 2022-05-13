@@ -42,7 +42,7 @@ private[hpack] class HpackUtilPlatform {
     var c: Char = 0;
     var i = 0
     while (i < s1.length) {
-      c = (c | (s1(i) ^ s2(i))).toChar;
+      c = (c | s1(i) ^ s2(i)).toChar;
       i += 1
     }
     return c == 0;

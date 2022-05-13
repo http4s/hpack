@@ -147,7 +147,7 @@ case class TestCase(
       maxHeaderTableSize: Int,
       sensitive: Boolean,
   ) = {
-    val baos = new ByteArrayOutputStream();
+    val baos = new ByteArrayOutputStream;
 
     if (maxHeaderTableSize != -1) {
       encoder.setMaxHeaderTableSize(baos, maxHeaderTableSize);
@@ -162,7 +162,7 @@ case class TestCase(
 
   @throws[IOException]
   private def decode(decoder: Decoder, expected: Array[Byte]) = {
-    val headers = new util.ArrayList[HeaderField]();
+    val headers = new util.ArrayList[HeaderField];
     val listener = new TestHeaderListener(headers);
     decoder.decode(new ByteArrayInputStream(expected), listener);
     decoder.endHeaderBlock();
@@ -208,7 +208,7 @@ object TestCase extends TestCasePlatform {
       .decodeMap[String, String]
       .map(_.toList)
       .emap {
-        case List((name, value)) => Right(new HeaderField(name, value))
+        case List(name, value) => Right(new HeaderField(name, value))
         case _ => Left("HeaderField object must have exactly 1 entry")
       }
 

@@ -164,7 +164,7 @@ private[http4s] final class Encoder(
     if (n < 0 || n > 8) {
       throw new IllegalArgumentException("N: " + n);
     }
-    val nbits = 0xff >>> (8 - n);
+    val nbits = 0xff >>> 8 - n;
     if (i < nbits) {
       out.write(mask | i);
     } else {
@@ -175,7 +175,7 @@ private[http4s] final class Encoder(
           out.write(length);
           return;
         } else {
-          out.write((length & 0x7f) | 0x80);
+          out.write(length & 0x7f | 0x80);
           length >>>= 7;
         }
     }
@@ -186,7 +186,7 @@ private[http4s] final class Encoder(
   @throws[IOException]
   private[this] def encodeStringLiteral(out: OutputStream, string: Array[Byte]): Unit = {
     val huffmanLength = Huffman.ENCODER.getEncodedLength(string);
-    if ((huffmanLength < string.length && !forceHuffmanOff) || forceHuffmanOn) {
+    if (huffmanLength < string.length && !forceHuffmanOff || forceHuffmanOn) {
       encodeInteger(out, 0x80, 7, huffmanLength);
       Huffman.ENCODER.encode(out, string);
     } else {

@@ -45,7 +45,7 @@ private[http4s] final class DynamicTable {
   /** Creates a new dynamic table with the specified initial capacity.
     */
   def this(initialCapacity: Int) {
-    this()
+    this
     setCapacity(initialCapacity);
   }
 
@@ -67,7 +67,7 @@ private[http4s] final class DynamicTable {
     */
   def getEntry(index: Int): HeaderField = {
     if (index <= 0 || index > length()) {
-      throw new IndexOutOfBoundsException();
+      throw new IndexOutOfBoundsException;
     }
     val i = head - index;
     if (i < 0) {

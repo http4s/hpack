@@ -41,7 +41,7 @@ private[http4s] object HpackUtil extends HpackUtilPlatform {
     */
   def requireNonNull[T <: AnyRef](obj: T): T = {
     if (obj eq null)
-      throw new NullPointerException();
+      throw new NullPointerException;
     return obj;
   }
 
