@@ -254,7 +254,7 @@ private[http4s] final class Encoder(
     * Exposed for testing.
     */
   private[hpack] def length(): Int =
-    return if (size == 0) 0 else (head.after.index - head.before.index + 1);
+    return if (size == 0) 0 else head.after.index - head.before.index + 1;
 
   /** Return the header field at the given index.
     * Exposed for testing.
