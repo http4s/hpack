@@ -88,7 +88,7 @@ private[http4s] final class HuffmanEncoder(codes: Array[Int], lengths: Array[Byt
 
       while (n >= 8) {
         n -= 8;
-        out.write(((current >> n).toInt));
+        out.write((current >> n).toInt);
       }
       i += 1
     }
