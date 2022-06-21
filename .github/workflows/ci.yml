@@ -29,14 +29,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.16, 3.1.2, 2.13.8]
+        scala: [2.12.16, 3.1.3, 2.13.8]
         java: [temurin@8, temurin@11]
         project: [rootJS, rootJVM]
         sjsStage: [FastOptStage, FullOptStage]
         exclude:
           - scala: 2.12.16
             java: temurin@11
-          - scala: 3.1.2
+          - scala: 3.1.3
             java: temurin@11
           - project: rootJS
             java: temurin@11
@@ -218,22 +218,22 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.1.2, rootJS, FastOptStage)
+      - name: Download target directories (3.1.3, rootJS, FastOptStage)
         uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.2-rootJS-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.3-rootJS-FastOptStage
 
-      - name: Inflate target directories (3.1.2, rootJS, FastOptStage)
+      - name: Inflate target directories (3.1.3, rootJS, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.1.2, rootJVM, FastOptStage)
+      - name: Download target directories (3.1.3, rootJVM, FastOptStage)
         uses: actions/download-artifact@v2
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.2-rootJVM-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.1.3-rootJVM-FastOptStage
 
-      - name: Inflate target directories (3.1.2, rootJVM, FastOptStage)
+      - name: Inflate target directories (3.1.3, rootJVM, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
