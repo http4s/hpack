@@ -33,13 +33,13 @@ package org.http4s.hpack
 
 import io.circe.jawn
 
-import java.io.File
+import scala.io.Source
 
 trait TestCasePlatform {
 
   def load(fileName: String): TestCase =
     jawn
-      .decodeFile[TestCase](new File(getClass.getResource(fileName).toURI()))
+      .decode[TestCase](Source.fromInputStream(getClass.getResourceAsStream(fileName)).mkString)
       .fold(throw _, identity(_))
 
 }

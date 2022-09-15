@@ -9,13 +9,14 @@ ThisBuild / tlFatalWarningsInCi := false
 
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
 ThisBuild / githubWorkflowBuildMatrixAdditions += "sjsStage" -> List("FastOptStage", "FullOptStage")
-ThisBuild / githubWorkflowBuildMatrixExclusions +=
-  MatrixExclude(Map("project" -> "rootJVM", "sjsStage" -> "FullOptStage"))
+ThisBuild / githubWorkflowBuildMatrixExclusions ++= List("rootJVM", "rootNative").map { project =>
+  MatrixExclude(Map("project" -> project, "sjsStage" -> "FullOptStage"))
+}
 ThisBuild / githubWorkflowBuildSbtStepPreamble += "set Global/scalaJSStage := ${{ matrix.sjsStage }}"
 
 lazy val root = tlCrossRootProject.aggregate(hpack)
 
-lazy val hpack = crossProject(JVMPlatform, JSPlatform)
+lazy val hpack = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .in(file("hpack"))
   .settings(
     name := "hpack",
@@ -34,5 +35,11 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform)
   .jsSettings(
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
+  .nativeSettings(
+    tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.4").toMap,
+    unusedCompileDependenciesTest := {},
+    nativeConfig ~= (_.withEmbedResources(true)),
+  )
   .jvmEnablePlugins(NoPublishPlugin)
   .jsEnablePlugins(ScalaJSJUnitPlugin)
+  .nativeEnablePlugins(ScalaNativeJUnitPlugin)
