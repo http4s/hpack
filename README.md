@@ -1,4 +1,4 @@
-This is an internal fork of [Twitter HPACK](https://github.com/twitter/hpack) for http4s that has been ported to pure Scala and cross-built for Scala.js.
+This is an internal fork of [Twitter HPACK](https://github.com/twitter/hpack) for http4s that has been ported to pure Scala and cross-built for Scala.js and Scala Native.
 
 HPACK [![Build Status](https://travis-ci.org/twitter/hpack.png?branch=master)](https://travis-ci.org/twitter/hpack) [![Coverage Status](https://coveralls.io/repos/twitter/hpack/badge.png?branch=master)](https://coveralls.io/r/twitter/hpack?branch=master)
 =====
