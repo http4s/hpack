@@ -85,7 +85,7 @@ private[http4s] class HeaderField(val name: Array[Byte], val value: Array[Byte])
     if (obj.isInstanceOf[AnyRef] && (obj.asInstanceOf[AnyRef] eq this)) {
       return true;
     }
-    if (!(obj.isInstanceOf[HeaderField])) {
+    if (!obj.isInstanceOf[HeaderField]) {
       return false;
     }
     val other = obj.asInstanceOf[HeaderField];
