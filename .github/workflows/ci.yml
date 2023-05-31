@@ -29,14 +29,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.17, 3.2.2, 2.13.10]
+        scala: [2.12.17, 3.3.0, 2.13.10]
         java: [temurin@8, temurin@11]
         project: [rootJS, rootJVM, rootNative]
         sjsStage: [FastOptStage, FullOptStage]
         exclude:
           - scala: 2.12.17
             java: temurin@11
-          - scala: 3.2.2
+          - scala: 3.3.0
             java: temurin@11
           - project: rootJS
             java: temurin@11
@@ -236,32 +236,32 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.2.2, rootJS, FastOptStage)
+      - name: Download target directories (3.3.0, rootJS, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.2.2-rootJS-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootJS-FastOptStage
 
-      - name: Inflate target directories (3.2.2, rootJS, FastOptStage)
+      - name: Inflate target directories (3.3.0, rootJS, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.2.2, rootJVM, FastOptStage)
+      - name: Download target directories (3.3.0, rootJVM, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.2.2-rootJVM-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootJVM-FastOptStage
 
-      - name: Inflate target directories (3.2.2, rootJVM, FastOptStage)
+      - name: Inflate target directories (3.3.0, rootJVM, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.2.2, rootNative, FastOptStage)
+      - name: Download target directories (3.3.0, rootNative, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.2.2-rootNative-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootNative-FastOptStage
 
-      - name: Inflate target directories (3.2.2, rootNative, FastOptStage)
+      - name: Inflate target directories (3.3.0, rootNative, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
