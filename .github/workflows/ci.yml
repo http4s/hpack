@@ -236,32 +236,32 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.0, rootJS, FastOptStage)
+      - name: Download target directories (3.3.4, rootJS, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootJS-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.4-rootJS-FastOptStage
 
-      - name: Inflate target directories (3.3.0, rootJS, FastOptStage)
+      - name: Inflate target directories (3.3.4, rootJS, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.0, rootJVM, FastOptStage)
+      - name: Download target directories (3.3.4, rootJVM, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootJVM-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.4-rootJVM-FastOptStage
 
-      - name: Inflate target directories (3.3.0, rootJVM, FastOptStage)
+      - name: Inflate target directories (3.3.4, rootJVM, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
 
-      - name: Download target directories (3.3.0, rootNative, FastOptStage)
+      - name: Download target directories (3.3.4, rootNative, FastOptStage)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.0-rootNative-FastOptStage
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3.3.4-rootNative-FastOptStage
 
-      - name: Inflate target directories (3.3.0, rootNative, FastOptStage)
+      - name: Inflate target directories (3.3.4, rootNative, FastOptStage)
         run: |
           tar xf targets.tar
           rm targets.tar
