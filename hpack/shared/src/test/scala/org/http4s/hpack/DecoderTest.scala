@@ -33,15 +33,15 @@ package org.http4s.hpack
 
 import cats.kernel.Eq
 import cats.syntax.all._
-
-import java.io.ByteArrayInputStream
-import java.io.IOException
-import org.junit.Before
-import org.junit.Test
 import org.http4s.hpack.HpackUtil.ISO_8859_1
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+import java.io.ByteArrayInputStream
+import java.io.IOException
 
 object DecoderTest {
   private val MAX_HEADER_SIZE = 8192
@@ -141,6 +141,16 @@ class DecoderTest {
     assertEquals(0, decoder.getMaxHeaderTableSize)
     decode("2081")
   }
+
+  @Test(expected = classOf[IOException])
+  @throws[IOException]
+  def testDynamicTableSizeUpdateAfterTheBeginningOfTheBlock(): Unit =
+    decode("8120")
+
+  @Test(expected = classOf[IOException])
+  @throws[Exception]
+  def testDynamicTableSizeUpdateAfterTheBeginningOfTheBlockLong(): Unit =
+    decode("813FE11F")
 
   @Test(expected = classOf[IOException])
   @throws[Exception]
