@@ -3,7 +3,7 @@ ThisBuild / startYear := Some(2022)
 ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
 ThisBuild / tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.3").toMap
 
-ThisBuild / crossScalaVersions := Seq("2.12.17", "3.3.0", "2.13.10")
+ThisBuild / crossScalaVersions := Seq("2.12.17", "3.3.0", "2.13.16")
 
 ThisBuild / tlFatalWarningsInCi := false
 
