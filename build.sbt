@@ -5,7 +5,7 @@ ThisBuild / tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.3").t
 
 ThisBuild / crossScalaVersions := Seq("2.12.17", "3.3.5", "2.13.16")
 
-ThisBuild / tlFatalWarningsInCi := false
+ThisBuild / tlFatalWarnings := false
 
 ThisBuild / githubWorkflowJavaVersions := List("8", "11").map(JavaSpec.temurin(_))
 ThisBuild / githubWorkflowBuildMatrixAdditions += "sjsStage" -> List("FastOptStage", "FullOptStage")
