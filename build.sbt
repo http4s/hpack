@@ -36,7 +36,7 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .nativeSettings(
-    tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.4").toMap,
+    tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.5").toMap,
     unusedCompileDependenciesTest := {},
     nativeConfig ~= (_.withEmbedResources(true)),
   )
