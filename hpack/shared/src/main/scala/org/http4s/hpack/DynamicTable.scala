@@ -44,7 +44,7 @@ private[http4s] final class DynamicTable {
 
   /** Creates a new dynamic table with the specified initial capacity.
     */
-  def this(initialCapacity: Int) {
+  def this(initialCapacity: Int) = {
     this()
     setCapacity(initialCapacity);
   }

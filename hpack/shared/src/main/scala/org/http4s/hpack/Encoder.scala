@@ -60,7 +60,7 @@ private[http4s] final class Encoder(
       useIndexing: Boolean,
       forceHuffmanOn: Boolean,
       forceHuffmanOff: Boolean,
-  ) {
+  ) = {
     this(useIndexing, forceHuffmanOn, forceHuffmanOff)
     if (maxHeaderTableSize < 0) {
       throw new IllegalArgumentException("Illegal Capacity: " + maxHeaderTableSize);
