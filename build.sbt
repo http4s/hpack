@@ -1,4 +1,4 @@
-ThisBuild / tlBaseVersion := "1.0"
+ThisBuild / tlBaseVersion := "1.1"
 ThisBuild / startYear := Some(2022)
 ThisBuild / developers += tlGitHubDev("armanbilge", "Arman Bilge")
 ThisBuild / tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.3").toMap
@@ -36,7 +36,7 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
   .nativeSettings(
-    tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.0.5").toMap,
+    tlVersionIntroduced := List("2.12", "2.13", "3").map(_ -> "1.1.0").toMap,
     unusedCompileDependenciesTest := {},
     nativeConfig ~= (_.withEmbedResources(true)),
   )
