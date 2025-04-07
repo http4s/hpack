@@ -33,7 +33,6 @@ package org.http4s.hpack;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.http4s.hpack.HpackUtil.ISO_8859_1;

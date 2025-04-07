@@ -110,9 +110,9 @@ class DecoderTest {
   @throws[Exception]
   def testDynamicTableSizeUpdate(): Unit = {
     decode("20")
-    assertEquals(0, decoder.getMaxHeaderTableSize)
+    assertEquals(0, decoder.getMaxHeaderTableSize())
     decode("3FE11F")
-    assertEquals(4096, decoder.getMaxHeaderTableSize)
+    assertEquals(4096, decoder.getMaxHeaderTableSize())
   }
 
   @Test
@@ -120,7 +120,7 @@ class DecoderTest {
   def testDynamicTableSizeUpdateRequired(): Unit = {
     decoder.setMaxHeaderTableSize(32)
     decode("3F00")
-    assertEquals(31, decoder.getMaxHeaderTableSize)
+    assertEquals(31, decoder.getMaxHeaderTableSize())
   }
 
   @Test(expected = classOf[IOException])
@@ -138,7 +138,7 @@ class DecoderTest {
   @throws[Exception]
   def testReduceMaxDynamicTableSize(): Unit = {
     decoder.setMaxHeaderTableSize(0)
-    assertEquals(0, decoder.getMaxHeaderTableSize)
+    assertEquals(0, decoder.getMaxHeaderTableSize())
     decode("2081")
   }
 
@@ -146,7 +146,7 @@ class DecoderTest {
   @throws[Exception]
   def testTooLargeDynamicTableSizeUpdate(): Unit = {
     decoder.setMaxHeaderTableSize(0)
-    assertEquals(0, decoder.getMaxHeaderTableSize)
+    assertEquals(0, decoder.getMaxHeaderTableSize())
     decode("21") // encoder max header table size not small enough
 
   }
@@ -155,7 +155,7 @@ class DecoderTest {
   @throws[Exception]
   def testMissingDynamicTableSizeUpdate(): Unit = {
     decoder.setMaxHeaderTableSize(0)
-    assertEquals(0, decoder.getMaxHeaderTableSize)
+    assertEquals(0, decoder.getMaxHeaderTableSize())
     decode("81")
   }
 
@@ -177,7 +177,7 @@ class DecoderTest {
         )
       )
     )
-    assertFalse(decoder.endHeaderBlock)
+    assertFalse(decoder.endHeaderBlock())
     mockListener.reset()
     var sb = new StringBuilder
     for (i <- 0 until 4096)
@@ -199,7 +199,7 @@ class DecoderTest {
           )
         )
     )
-    assertFalse(decoder.endHeaderBlock)
+    assertFalse(decoder.endHeaderBlock())
     // Verify next header is inserted at index 62
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
     assertEquals(
@@ -229,7 +229,7 @@ class DecoderTest {
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
     // Verify header block is reported as truncated
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
     assertTrue(
       mockListener.headers ===
@@ -255,7 +255,7 @@ class DecoderTest {
       sb.append("61")
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     decode("4004" + DecoderTest.hex("name") + "05" + DecoderTest.hex("value") + "BE")
     assertTrue(
       mockListener.headers ===
@@ -284,7 +284,7 @@ class DecoderTest {
     sb.append("00")
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     // Verify table is unmodified
     decode("BE")
   }
@@ -300,7 +300,7 @@ class DecoderTest {
       sb.append("61")
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     decode("BE")
   }
 
@@ -319,7 +319,7 @@ class DecoderTest {
     sb.append("00")
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     decode("BE")
   }
 
@@ -334,7 +334,7 @@ class DecoderTest {
       sb.append("61")
     decode(sb.toString)
     assertTrue(mockListener.headers.isEmpty)
-    assertTrue(decoder.endHeaderBlock)
+    assertTrue(decoder.endHeaderBlock())
     decode("BE")
   }
 }

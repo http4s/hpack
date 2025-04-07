@@ -130,7 +130,7 @@ private[http4s] object HuffmanDecoder {
       * @param symbol the symbol the node represents
       * @param bits   the number of bits matched by this node
       */
-    private[HuffmanDecoder] def this(symbol: Int, bits: Int) {
+    private[HuffmanDecoder] def this(symbol: Int, bits: Int) = {
       this(symbol, bits, null)
       assert(bits > 0 && bits <= 8);
     }
