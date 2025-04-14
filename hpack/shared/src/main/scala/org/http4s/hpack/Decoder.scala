@@ -31,12 +31,11 @@
  */
 package org.http4s.hpack;
 
-import java.io.IOException;
+import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD
+import org.http4s.hpack.HpackUtil.IndexType
+
+import java.io.IOException
 import java.io.InputStream;
-
-import org.http4s.hpack.HpackUtil.IndexType;
-
-import org.http4s.hpack.HeaderField.HEADER_ENTRY_OVERHEAD;
 
 private[http4s] final class Decoder(dynamicTable: DynamicTable) {
 
@@ -48,6 +47,11 @@ private[http4s] final class Decoder(dynamicTable: DynamicTable) {
     new IOException("invalid max dynamic table size");
   private[this] val MAX_DYNAMIC_TABLE_SIZE_CHANGE_REQUIRED =
     new IOException("max dynamic table size change required");
+  private[this] val UNEXPECTED_DYNAMIC_TABLE_SIZE_UPDATE =
+    new IOException(
+      "Dynamic table size update must happen "
+        + "at the beginning of the header block"
+    )
 
   private[this] val EMPTY = Array.emptyByteArray;
 
@@ -103,6 +107,8 @@ private[http4s] final class Decoder(dynamicTable: DynamicTable) {
     */
   @throws[IOException]
   def decode(in: InputStream, headerListener: HeaderListener): Unit = {
+    var seenOnlyDynamicTableSizeUpdate = true
+
     while (in.available() > 0) {
       var b: Byte = 0
       import State._
@@ -115,6 +121,7 @@ private[http4s] final class Decoder(dynamicTable: DynamicTable) {
           }
           if (b < 0) {
             // Indexed Header Field
+            seenOnlyDynamicTableSizeUpdate = false
             index = b & 0x7f;
             if (index == 0) {
               throw ILLEGAL_INDEX_VALUE;
@@ -125,6 +132,7 @@ private[http4s] final class Decoder(dynamicTable: DynamicTable) {
             }
           } else if ((b & 0x40) == 0x40) {
             // Literal Header Field with Incremental Indexing
+            seenOnlyDynamicTableSizeUpdate = false
             indexType = IndexType.INCREMENTAL;
             index = b & 0x3f;
             if (index == 0) {
@@ -138,15 +146,20 @@ private[http4s] final class Decoder(dynamicTable: DynamicTable) {
             }
           } else if ((b & 0x20) == 0x20) {
             // Dynamic Table Size Update
-            index = b & 0x1f;
-            if (index == 0x1f) {
-              state = State.READ_MAX_DYNAMIC_TABLE_SIZE;
+            if (seenOnlyDynamicTableSizeUpdate) {
+              index = b & 0x1f;
+              if (index == 0x1f) {
+                state = State.READ_MAX_DYNAMIC_TABLE_SIZE;
+              } else {
+                setDynamicTableSize(index);
+                state = State.READ_HEADER_REPRESENTATION;
+              }
             } else {
-              setDynamicTableSize(index);
-              state = State.READ_HEADER_REPRESENTATION;
+              throw UNEXPECTED_DYNAMIC_TABLE_SIZE_UPDATE
             }
           } else {
             // Literal Header Field without Indexing / never Indexed
+            seenOnlyDynamicTableSizeUpdate = false
             indexType = if ((b & 0x10) == 0x10) IndexType.NEVER else IndexType.NONE;
             index = b & 0x0f;
             if (index == 0) {
