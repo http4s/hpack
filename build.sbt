@@ -23,7 +23,7 @@ lazy val hpack = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.13.0" % Test,
       "io.circe" %%% "circe-parser" % "0.14.10" % Test,
-      "com.lihaoyi" %%% "sourcecode" % "0.4.2" % Test,
+      "com.lihaoyi" %%% "sourcecode" % "0.4.4" % Test,
     ),
   )
   .jvmSettings(
